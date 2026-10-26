@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Misi Pemuda Cerdas</title>
+<style>
+:root{--bg:#F3F6FB;--card:#FFFFFF;--ink:#14213D;--mut:#55627F;--blue:#1F5FB8;--btn:#1F4E9C;--acc:#F2B705;--ok:#1B7F52;--okb:#E3F5EC;--bad:#B3321F;--badb:#FBE9E6;--line:#D9E1F0;--soft:#E7EFFC;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0B1530;--card:#14213F;--ink:#EAF0FF;--mut:#A9B6D6;--blue:#7FB0FF;--ok:#58D39B;--okb:#12362B;--bad:#FF8E7C;--badb:#3B1B1B;--line:#2A3A60;--soft:#1B2C52}}
+:root[data-theme="dark"]{--bg:#0B1530;--card:#14213F;--ink:#EAF0FF;--mut:#A9B6D6;--blue:#7FB0FF;--ok:#58D39B;--okb:#12362B;--bad:#FF8E7C;--badb:#3B1B1B;--line:#2A3A60;--soft:#1B2C52}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.5}
+.w{max-width:560px;margin:0 auto;padding:16px}.w.d{max-width:1000px}
+.hero{background:#13294B;color:#fff;border-radius:22px;padding:28px 22px;text-align:center}
+.hero h1{margin:6px 0;font-size:34px;line-height:1.1;letter-spacing:-.01em}.hero p{margin:6px 0;color:#DCE6F7}
+.flag{height:8px;border-radius:4px;background:linear-gradient(#C00000 50%,#fff 50%);margin:14px 0}
+.c{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;margin:14px 0}
+.b{display:block;width:100%;min-height:52px;border:0;border-radius:14px;background:var(--btn);color:#fff;font:700 17px inherit;font-family:inherit;padding:14px;cursor:pointer;margin:10px 0}
+.b.s{background:var(--soft);color:var(--ink)}.b.y{background:var(--acc);color:#14213D}
+.b:disabled{opacity:.5}
+.chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:12px}
+.chip{background:rgba(255,255,255,.14);border-radius:30px;padding:6px 12px;font-size:14px}
+label{display:block;font-weight:600;margin:12px 0 4px}
+input,select{width:100%;min-height:48px;border:2px solid var(--line);border-radius:12px;padding:10px 12px;font:16px inherit;font-family:inherit;background:var(--card);color:var(--ink)}
+.err{color:var(--bad);font-weight:600;min-height:20px}
+.bar{height:10px;background:var(--soft);border-radius:8px;overflow:hidden}.bar i{display:block;height:100%;background:var(--blue);transition:width .3s}
+.top{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:14px;color:var(--mut)}
+.tag{display:inline-block;background:var(--soft);border-radius:30px;padding:4px 12px;font-weight:700;font-size:14px;color:var(--ink)}
+.q{font-size:19px;font-weight:600;margin:12px 0}
+.o{display:block;width:100%;text-align:left;min-height:54px;border:2px solid var(--line);border-radius:14px;background:var(--card);color:var(--ink);font:16px inherit;font-family:inherit;padding:12px 14px;margin:8px 0;cursor:pointer}
+.o.ok{border-color:var(--ok);background:var(--okb);animation:pop .35s}.o.no{border-color:var(--bad);background:var(--badb)}
+.o:hover{border-color:var(--blue)}
+.fb{border-radius:14px;padding:14px;margin:12px 0}.fb.ok{background:var(--okb)}.fb.no{background:var(--badb)}
+@keyframes pop{50%{transform:scale(1.03)}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+table.t{width:100%;border-collapse:collapse;margin:8px 0;font-size:15px}table.t th,table.t td{border:1px solid var(--line);padding:8px;text-align:left}table.t th{background:var(--soft)}
+.sc{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center}.sc div{background:var(--soft);border-radius:14px;padding:12px 4px}.sc b{display:block;font-size:26px}
+.big{font-size:54px;font-weight:800;text-align:center;line-height:1}
+.sw{overflow-x:auto}.sw table{min-width:100%}
+.ov{position:fixed;inset:0;background:rgba(10,20,45,.93);z-index:9;display:flex;align-items:center;justify-content:center;padding:16px}
+body.gm{-webkit-user-select:none;user-select:none}
+
+/* Print Styles untuk Panitia */
+@media print {
+    body { background: #fff; }
+    .no-print { display: none !important; }
+    .c { border: none; padding: 0; margin: 0; box-shadow: none; }
+    table.t th { background: #f0f0f0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+/* ===== KONFIGURASI ===== */
+var KODE = 'PEMUDA2026', PER_LEVEL = 5, WAKTU = 600, MAKS_PL = 3;
+
+/* ===== PENYIMPANAN ONLINE ===== */
+// URL Deployment Google Apps Script Anda (Contoh)
+var SHEET_URL = 'https://script.google.com/macros/s/AKfycbxY0Zru4YhzKeBMUHZrJTqmCSfVJIMe_fc52I1MygTnKtxouLPrmwNbLRW5wu6D_KM2bw/exec';
+
+/* ===== DATA SOAL (Contoh) ===== */
+const quizQuestions = [
+    { q: "Siapakah proklamator kemerdekaan Republik Indonesia?", options: ["Ir. Soekarno & Drs. Moh. Hatta", "Soeharto & B.J. Habibie", "Jenderal Sudirman & Bung Tomo", "Sutan Sjahrir & Tan Malaka"], ans: 0 },
+    { q: "Apa nama ibukota negara Indonesia saat ini?", options: ["Surabaya", "Bandung", "Jakarta", "Yogyakarta"], ans: 2 },
+    { q: "Kapan Hari Sumpah Pemuda diperingati?", options: ["17 Agustus", "28 Oktober", "10 November", "1 Juni"], ans: 1 },
+    { q: "Lagu kebangsaan Indonesia Raya diciptakan oleh?", options: ["Ibu Sud", "W.R. Supratman", "Ismail Marzuki", "C. Simanjuntak"], ans: 1 }
+];
+
+/* ===== STATE APLIKASI ===== */
+let state = {
+    view: 'home', // home, peserta_login, panitia_login, quiz, result, panitia_dash
+    user: null,
+    currentQuestion: 0,
+    score: 0,
+    answers: [],
+    adminData: []
+};
+
+// Fungsi Render Utama
+function render() {
+    const app = document.getElementById('app');
+    if (state.view === 'home') app.innerHTML = viewHome();
+    else if (state.view === 'peserta_login') app.innerHTML = viewPesertaLogin();
+    else if (state.view === 'panitia_login') app.innerHTML = viewPanitiaLogin();
+    else if (state.view === 'quiz') app.innerHTML = viewQuiz();
+    else if (state.view === 'result') app.innerHTML = viewResult();
+    else if (state.view === 'panitia_dash') app.innerHTML = viewPanitiaDash();
+}
+
+// Komponen Tampilan
+function viewHome() {
+    return `
+        <div class="w">
+            <div class="hero">
+                <h1>Misi Pemuda Cerdas</h1>
+                <p>Platform Ujian & Evaluasi Generasi Bangsa</p>
+                <div class="flag"></div>
+            </div>
+            <div class="c" style="text-align:center;">
+                <h3 style="margin-top:0">Pilih Akses Masuk</h3>
+                <button class="b y" onclick="navigate('peserta_login')">Masuk Sebagai Peserta</button>
+                <button class="b s" onclick="navigate('panitia_login')">Masuk Sebagai Panitia</button>
+            </div>
+        </div>
+    `;
+}
+
+function viewPesertaLogin() {
+    return `
+        <div class="w">
+            <div class="c">
+                <h2 style="margin-top:0">Login Peserta</h2>
+                <label>Nama Lengkap</label>
+                <input type="text" id="p_nama" placeholder="Masukkan nama Anda">
+                <label>Asal Sekolah / Instansi</label>
+                <input type="text" id="p_instansi" placeholder="Masukkan asal instansi">
+                <button class="b" style="margin-top:20px" onclick="startQuiz()">Mulai Mengerjakan</button>
+                <button class="b s" onclick="navigate('home')">Kembali</button>
+            </div>
+        </div>
+    `;
+}
+
+function viewPanitiaLogin() {
+    return `
+        <div class="w">
+            <div class="c">
+                <h2 style="margin-top:0">Login Panitia</h2>
+                <label>Password Panitia</label>
+                <input type="password" id="a_pass" placeholder="Masukkan password">
+                <button class="b" style="margin-top:20px" onclick="loginAdmin()">Masuk Dashboard</button>
+                <button class="b s" onclick="navigate('home')">Kembali</button>
+            </div>
+        </div>
+    `;
+}
+
+function viewQuiz() {
+    const q = quizQuestions[state.currentQuestion];
+    let optionsHtml = '';
+    q.options.forEach((opt, idx) => {
+        optionsHtml += `<button class="o" onclick="answerQuestion(${idx})">${opt}</button>`;
+    });
+
+    return `
+        <div class="w">
+            <div class="c">
+                <div class="top">
+                    <span>Soal ${state.currentQuestion + 1} / ${quizQuestions.length}</span>
+                    <span class="tag">${state.user.nama}</span>
+                </div>
+                <div class="bar" style="margin: 10px 0;"><i style="width: ${((state.currentQuestion) / quizQuestions.length) * 100}%"></i></div>
+                <div class="q">${q.q}</div>
+                ${optionsHtml}
+            </div>
+        </div>
+    `;
+}
+
+function viewResult() {
+    return `
+        <div class="w">
+            <div class="c" style="text-align:center;">
+                <h2>Ujian Selesai!</h2>
+                <p>Terima kasih, <b>${state.user.nama}</b> telah berpartisipasi.</p>
+                <div class="sc" style="margin:20px 0">
+                    <div><b>${state.score}</b><br>Skor Akhir</div>
+                </div>
+                <p style="color:var(--mut); font-size:14px;">Hasil Anda telah dikirim dan direkam oleh Panitia.</p>
+                <button class="b s" onclick="navigate('home')">Kembali ke Beranda</button>
+            </div>
+        </div>
+    `;
+}
+
+function viewPanitiaDash() {
+    let rows = '';
+    if(state.adminData.length === 0) {
+        rows = `<tr><td colspan="4" style="text-align:center">Belum ada data atau sedang memuat...</td></tr>`;
+    } else {
+        state.adminData.forEach((d, i) => {
+            rows += `<tr>
+                <td>${i+1}</td>
+                <td>${d.nama}</td>
+                <td>${d.instansi}</td>
+                <td><b>${d.skor}</b></td>
+            </tr>`;
+        });
+    }
+
+    return `
+        <div class="w d">
+            <div class="c">
+                <div class="top no-print">
+                    <h2>Dashboard Panitia</h2>
+                    <div>
+                        <button class="b s" style="display:inline-block; width:auto; min-height:auto; padding:8px 16px; margin:0" onclick="fetchDataAdmin()">Refresh Data</button>
+                        <button class="b s" style="display:inline-block; width:auto; min-height:auto; padding:8px 16px; margin:0" onclick="window.print()">Cetak (Print)</button>
+                        <button class="b" style="display:inline-block; width:auto; min-height:auto; padding:8px 16px; margin:0; background:var(--bad);" onclick="navigate('home')">Keluar</button>
+                    </div>
+                </div>
+                <div style="margin-top:20px;" class="sw">
+                    <h3>Laporan Hasil Peserta</h3>
+                    <table class="t">
+                        <thead>
+                            <tr>
+                                <th width="50">No</th>
+                                <th>Nama Peserta</th>
+                                <th>Instansi</th>
+                                <th width="100">Skor</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${rows}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+/* ===== LOGIKA APLIKASI ===== */
+
+function navigate(viewName) {
+    state.view = viewName;
+    render();
+}
+
+function showModal(msg) {
+    const m = document.createElement('div');
+    m.className = 'ov';
+    m.innerHTML = `<div class="c" style="width:100%; max-width:320px; text-align:center; animation:pop 0.3s">
+        <h3 style="margin-top:0">Pemberitahuan</h3>
+        <p>${msg}</p>
+        <button class="b" onclick="this.parentElement.parentElement.remove()">Tutup</button>
+    </div>`;
+    document.body.appendChild(m);
+}
+
+// Logika Peserta
+function startQuiz() {
+    const nama = document.getElementById('p_nama').value.trim();
+    const instansi = document.getElementById('p_instansi').value.trim();
+    
+    if(!nama || !instansi) {
+        showModal('Nama dan Instansi wajib diisi!');
+        return;
+    }
+    
+    state.user = { nama, instansi };
+    state.currentQuestion = 0;
+    state.score = 0;
+    state.answers = [];
+    navigate('quiz');
+}
+
+function answerQuestion(idx) {
+    const isCorrect = (idx === quizQuestions[state.currentQuestion].ans);
+    if(isCorrect) state.score += (100 / quizQuestions.length);
+    
+    state.answers.push(idx);
+    state.currentQuestion++;
+    
+    if(state.currentQuestion >= quizQuestions.length) {
+        finishQuiz();
+    } else {
+        render();
+    }
+}
+
+function finishQuiz() {
+    // Simpan ke Google Sheet (Simulasi Fetch API)
+    saveDataToSheet(state.user.nama, state.user.instansi, Math.round(state.score));
+    
+    // Tampilkan Hasil
+    navigate('result');
+}
+
+// Logika Panitia
+function loginAdmin() {
+    const pass = document.getElementById('a_pass').value;
+    if(pass === 'panitia123') { // Default password
+        navigate('panitia_dash');
+        fetchDataAdmin(); // Ambil data saat berhasil login
+    } else {
+        showModal('Password panitia salah!');
+    }
+}
+
+/* ===== INTEGRASI GOOGLE SHEET (SIMULASI/FETCH) ===== */
+// Catatan: Untuk script Google Apps (GAS), pastikan script Anda 
+// di set agar menerima metode GET dan POST (doGet dan doPost)
+
+// Array lokal sebagai fallback jika URL GAS belum diatur
+let localDb = [];
+
+function saveDataToSheet(nama, instansi, skor) {
+    // Simpan ke fallback lokal
+    localDb.push({ nama, instansi, skor });
+    
+    if(!SHEET_URL) return; // Jika tidak ada URL, abaikan request
+    
+    // Kirim data POST (opsional: no-cors bergantung konfigurasi GAS)
+    fetch(SHEET_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: `action=save&nama=${encodeURIComponent(nama)}&instansi=${encodeURIComponent(instansi)}&skor=${skor}`
+    }).catch(e => console.log('Gagal menyimpan ke Sheet online', e));
+}
+
+function fetchDataAdmin() {
+    if(!SHEET_URL) {
+        // Gunakan data lokal jika belum ada link Sheet
+        state.adminData = localDb;
+        render();
+        return;
+    }
+
+    // Jika ada link sheet, coba ambil data (Contoh GET request)
+    fetch(SHEET_URL + "?action=get")
+        .then(res => res.json())
+        .then(data => {
+            if(data && Array.isArray(data)) {
+                state.adminData = data;
+            } else {
+                state.adminData = localDb; // fallback
+            }
+            render();
+        })
+        .catch(e => {
+            console.log('Gagal mengambil data, menggunakan memori lokal.', e);
+            state.adminData = localDb;
+            render();
+        });
+}
+
+// Inisialisasi awal
+render();
+</script>
+</body>
+</html>
