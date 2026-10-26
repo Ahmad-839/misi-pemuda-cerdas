@@ -6,6 +6,8 @@
 <title>Misi Pemuda Cerdas</title>
 <!-- Tambahkan library SheetJS untuk kemampuan membaca Excel -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<!-- Tambahkan html2canvas untuk fitur download sertifikat -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 :root{--bg:#F3F6FB;--card:#FFFFFF;--ink:#14213D;--mut:#55627F;--blue:#1F5FB8;--btn:#1F4E9C;--acc:#F2B705;--ok:#1B7F52;--okb:#E3F5EC;--bad:#B3321F;--badb:#FBE9E6;--line:#D9E1F0;--soft:#E7EFFC;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0B1530;--card:#14213F;--ink:#EAF0FF;--mut:#A9B6D6;--blue:#7FB0FF;--ok:#58D39B;--okb:#12362B;--bad:#FF8E7C;--badb:#3B1B1B;--line:#2A3A60;--soft:#1B2C52}}
@@ -43,6 +45,24 @@ table.t{width:100%;border-collapse:collapse;margin:8px 0;font-size:15px}table.t 
 .ov{position:fixed;inset:0;background:rgba(10,20,45,.93);z-index:9;display:flex;align-items:center;justify-content:center;padding:16px}
 .q-card{border: 2px solid var(--line); border-radius: 12px; padding:12px; margin-bottom: 12px; background:var(--bg);}
 .q-card h4{margin: 0 0 10px 0;}
+
+/* Gaya Desain Mewah Hasil & Sertifikat */
+.lux-card { background: linear-gradient(135deg, var(--card), var(--soft)); border: 1px solid var(--line); border-radius: 20px; padding: 40px 20px; box-shadow: 0 10px 30px rgba(31, 78, 156, 0.08); text-align: center; margin-bottom: 20px; }
+.score-circle { width: 140px; height: 140px; background: linear-gradient(135deg, var(--btn), var(--blue)); border-radius: 50%; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 25px auto; box-shadow: 0 10px 25px rgba(31, 95, 184, 0.4); border: 6px solid var(--card); }
+.score-circle b { font-size: 52px; line-height: 1.1; }
+.cert-wrapper { overflow-x: auto; padding: 20px 0; background: #e9eff5; border-radius: 14px; margin-top: 10px; display: flex; justify-content: center; box-shadow: inset 0 4px 10px rgba(0,0,0,0.05); }
+.cert { width: 800px; min-width: 800px; height: 565px; background: #fff url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"><rect width="100%" height="100%" fill="none" stroke="%231F4E9C" stroke-width="35"/></svg>') no-repeat center center; position: relative; padding: 40px; box-sizing: border-box; color: #14213D; font-family: "Times New Roman", Times, serif; }
+.cert-inner { border: 2px solid #F2B705; height: 100%; padding: 25px; text-align: center; position: relative; z-index: 2; background: rgba(255,255,255,0.95); display: flex; flex-direction: column; justify-content: center; }
+.cert-logos { display: flex; justify-content: space-between; align-items: flex-start; position: absolute; top: 25px; left: 25px; right: 25px; }
+.cert-logos img { height: 85px; object-fit: contain; }
+.cert-title { font-size: 46px; font-weight: 900; color: #1F4E9C; margin: 25px 0 5px; letter-spacing: 3px; text-transform: uppercase; }
+.cert-subtitle { font-size: 18px; color: #55627F; margin-bottom: 25px; letter-spacing: 2px; font-family: system-ui, sans-serif; }
+.cert-name { font-size: 48px; font-weight: bold; color: #14213D; border-bottom: 2px solid #1F4E9C; display: inline-block; padding: 0 50px 5px; margin-bottom: 25px; font-family: 'Georgia', serif; text-transform: uppercase; }
+.cert-desc { font-size: 20px; line-height: 1.6; max-width: 650px; margin: 0 auto 30px; color: #333; font-family: system-ui, sans-serif; }
+.cert-footer { display: flex; justify-content: space-around; margin-top: auto; padding-bottom: 10px; font-family: system-ui, sans-serif; }
+.cert-sign { text-align: center; }
+.cert-sign p { margin: 0; font-size: 16px; color: #14213D; }
+.cert-sign .line { width: 220px; border-bottom: 1px solid #14213D; margin: 60px auto 5px; }
 
 @media print {
     body { background: #fff; }
@@ -166,18 +186,82 @@ function viewQuiz() {
 
 function viewResult() {
     return `
-        <div class="w">
-            <div class="c" style="text-align:center;">
-                <h2>Ujian Selesai!</h2>
-                <p>Terima kasih, <b>${state.user.nama}</b> telah berpartisipasi.</p>
-                <div class="sc" style="margin:20px 0">
-                    <div><b>${state.score}</b><br>Skor Akhir</div>
+        <div class="w d">
+            <div class="lux-card">
+                <h2 style="color:var(--btn); margin-top:0; font-size:32px; font-weight:800;">Ujian Selesai!</h2>
+                <p style="font-size:17px;">Terima kasih, <b>${state.user.nama}</b> telah menyelesaikan ujian dengan baik.</p>
+                <div class="score-circle">
+                    <b>${Math.round(state.score)}</b>
+                    <span style="font-size:15px; opacity:0.9; margin-top:4px;">Skor Akhir</span>
                 </div>
-                <p style="color:var(--mut); font-size:14px;">Hasil Anda telah dikirim dan direkam oleh Panitia.</p>
-                <button class="b s" onclick="navigate('home')">Kembali ke Beranda</button>
+                <p style="color:var(--mut); font-size:15px; margin-bottom:28px;">Hasil Anda telah dikirim dan direkam secara otomatis oleh sistem Panitia.</p>
+                
+                <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
+                    <button class="b y" style="max-width:250px; margin:0; display:flex; align-items:center; justify-content:center; gap:8px; font-size:16px;" onclick="downloadCertificate()">
+                        <svg width="22" height="22" fill="currentColor" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                        Unduh Sertifikat
+                    </button>
+                    <button class="b s" style="max-width:250px; margin:0; font-size:16px;" onclick="navigate('home')">Kembali ke Beranda</button>
+                </div>
+            </div>
+
+            <div class="c" style="overflow:hidden; text-align:center;">
+                <h3 style="margin-top:0; color:var(--ink);">Preview Sertifikat</h3>
+                <div class="cert-wrapper">
+                    <div class="cert" id="certificateNode">
+                        <div class="cert-inner">
+                            <div class="cert-logos">
+                                <img src="LOGO SMK 45.jpg" alt="Logo SMK" crossorigin="anonymous">
+                                <img src="Logo Festival Literasi LITNUM FEST.png" alt="Logo Litnum" crossorigin="anonymous">
+                            </div>
+                            <div class="cert-title">Sertifikat Penghargaan</div>
+                            <div class="cert-subtitle">Diberikan dengan bangga kepada:</div>
+                            <div class="cert-name">${state.user.nama}</div>
+                            <div class="cert-desc">
+                                Atas partisipasi dan pencapaiannya yang luar biasa dalam<br>
+                                <b>Festival Literasi dan Numerasi (LITNUM FEST)</b><br>
+                                Misi Pemuda Cerdas - Peringatan Hari Sumpah Pemuda
+                            </div>
+                            <div class="cert-footer">
+                                <div class="cert-sign">
+                                    <p>Jember, 28 Oktober 2026</p>
+                                    <div class="line"></div>
+                                    <p><b>Ketua Panitia Litnum Fest</b></p>
+                                </div>
+                                <div class="cert-sign">
+                                    <p>Mengetahui,</p>
+                                    <div class="line"></div>
+                                    <p><b>Kepala Sekolah</b></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     `;
+}
+
+function downloadCertificate() {
+    const cert = document.getElementById('certificateNode');
+    if(!cert) return;
+    showModal('Sedang menyiapkan sertifikat, mohon tunggu sebentar...');
+    
+    html2canvas(cert, { 
+        scale: 2, // Kualitas tinggi
+        useCORS: true, 
+        backgroundColor: "#ffffff"
+    }).then(canvas => {
+        const link = document.createElement('a');
+        link.download = `Sertifikat_LITNUM_${state.user.nama}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+        document.body.removeChild(document.body.lastChild); // tutup pop-up modal
+    }).catch(err => {
+        console.error(err);
+        document.body.removeChild(document.body.lastChild);
+        showModal('Gagal mengunduh sertifikat. Pastikan browser Anda mendukung fitur ini.');
+    });
 }
 
 function viewPanitiaDash() {
