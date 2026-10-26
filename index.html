@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Misi Pemuda Cerdas</title>
+<!-- Tambahkan library SheetJS untuk kemampuan membaca Excel -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 :root{--bg:#F3F6FB;--card:#FFFFFF;--ink:#14213D;--mut:#55627F;--blue:#1F5FB8;--btn:#1F4E9C;--acc:#F2B705;--ok:#1B7F52;--okb:#E3F5EC;--bad:#B3321F;--badb:#FBE9E6;--line:#D9E1F0;--soft:#E7EFFC;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0B1530;--card:#14213F;--ink:#EAF0FF;--mut:#A9B6D6;--blue:#7FB0FF;--ok:#58D39B;--okb:#12362B;--bad:#FF8E7C;--badb:#3B1B1B;--line:#2A3A60;--soft:#1B2C52}}
@@ -233,35 +235,29 @@ function renderAdminSoal() {
     let list = '';
     state.questions.forEach((q, i) => {
         list += `
-        <div class="q-card">
-            <h4>Soal ${i+1}</h4>
-            <label>Pertanyaan</label>
-            <input type="text" value="${q.q}" onchange="updateQ(${i}, 'q', this.value)" style="margin-bottom:8px">
-            
-            <label>Opsi Jawaban (A, B, C, D)</label>
-            <input type="text" value="${q.options[0]}" onchange="updateQ(${i}, 'opt', this.value, 0)" style="margin-bottom:4px">
-            <input type="text" value="${q.options[1]}" onchange="updateQ(${i}, 'opt', this.value, 1)" style="margin-bottom:4px">
-            <input type="text" value="${q.options[2]}" onchange="updateQ(${i}, 'opt', this.value, 2)" style="margin-bottom:4px">
-            <input type="text" value="${q.options[3]}" onchange="updateQ(${i}, 'opt', this.value, 3)" style="margin-bottom:8px">
-            
-            <label>Kunci Jawaban Benar</label>
-            <select onchange="updateQ(${i}, 'ans', this.value)">
-                <option value="0" ${q.ans === 0 ? 'selected' : ''}>Opsi A (Pertama)</option>
-                <option value="1" ${q.ans === 1 ? 'selected' : ''}>Opsi B (Kedua)</option>
-                <option value="2" ${q.ans === 2 ? 'selected' : ''}>Opsi C (Ketiga)</option>
-                <option value="3" ${q.ans === 3 ? 'selected' : ''}>Opsi D (Keempat)</option>
-            </select>
-            
-            <button class="b s" style="background:var(--badb); color:var(--bad); margin-top:12px;" onclick="deleteQ(${i})">Hapus Soal Ini</button>
+        <div class="q-card" style="font-size:14px;">
+            <b>${i+1}. ${q.q}</b><br>
+            <span style="color:${q.ans===0?'var(--ok)':'inherit'}">A. ${q.options[0]}</span> | 
+            <span style="color:${q.ans===1?'var(--ok)':'inherit'}">B. ${q.options[1]}</span> | 
+            <span style="color:${q.ans===2?'var(--ok)':'inherit'}">C. ${q.options[2]}</span> | 
+            <span style="color:${q.ans===3?'var(--ok)':'inherit'}">D. ${q.options[3]}</span>
         </div>`;
     });
 
     return `
         <div class="no-print">
-            <p>Perubahan yang disimpan di sini akan langsung berlaku untuk peserta yang login.</p>
+            <div style="background:var(--soft); padding:16px; border-radius:12px; margin-bottom:16px;">
+                <h3 style="margin-top:0; margin-bottom:8px;">Upload Soal via Excel</h3>
+                <p style="font-size:14px; margin-top:0;">Buat file Excel dengan 6 kolom berurutan:<br>
+                <b>Pertanyaan | Opsi A | Opsi B | Opsi C | Opsi D | Jawaban</b><br>
+                <i>(Pada kolom Jawaban, cukup ketik huruf: A, B, C, atau D)</i></p>
+                
+                <input type="file" id="fileUpload" accept=".xlsx, .xls, .csv" style="margin-top:8px; padding:10px; background:#fff; width:100%; border-radius:8px;" onchange="handleFileUpload(event)">
+            </div>
+            
+            <h3 style="margin-top:0">Preview Soal (${state.questions.length})</h3>
             ${list}
-            <button class="b y" onclick="addQ()">+ Tambah Soal Baru</button>
-            <button class="b" onclick="saveQuestionsToSheet()">Simpan Soal ke Server</button>
+            <button class="b y" style="margin-top:16px;" onclick="saveQuestionsToSheet()">Simpan Soal ke Server</button>
         </div>
     `;
 }
@@ -332,23 +328,66 @@ function loginAdmin() {
     }
 }
 
-// Kelola Soal (Admin)
-function updateQ(idx, field, val, optIdx) {
-    if(field === 'q') state.questions[idx].q = val;
-    if(field === 'ans') state.questions[idx].ans = parseInt(val);
-    if(field === 'opt') state.questions[idx].options[optIdx] = val;
-}
+// Kelola Soal (Admin) - Fungsi Baca Excel
+function handleFileUpload(event) {
+    const file = event.target.files[0];
+    if(!file) return;
 
-function addQ() {
-    state.questions.push({ q: "Pertanyaan Baru", options: ["Opsi A", "Opsi B", "Opsi C", "Opsi D"], ans: 0 });
-    render();
-}
+    showModal('Sedang memproses file Excel...');
 
-function deleteQ(idx) {
-    if(confirm("Yakin hapus soal ini?")) {
-        state.questions.splice(idx, 1);
-        render();
-    }
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const data = new Uint8Array(e.target.result);
+            const workbook = XLSX.read(data, {type: 'array'});
+            const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+            const json = XLSX.utils.sheet_to_json(firstSheet, {defval: ""});
+
+            let newQuestions = [];
+            json.forEach(row => {
+                // Menggunakan index kolom agar penamaan header di baris 1 bebas
+                const keys = Object.keys(row);
+                if(keys.length >= 6) {
+                    const q = row[keys[0]];
+                    const a = row[keys[1]];
+                    const b = row[keys[2]];
+                    const c = row[keys[3]];
+                    const d = row[keys[4]];
+                    const ansStr = String(row[keys[5]]).toUpperCase().trim();
+
+                    let ansIdx = 0; // Default A
+                    if(ansStr === 'B') ansIdx = 1;
+                    else if(ansStr === 'C') ansIdx = 2;
+                    else if(ansStr === 'D') ansIdx = 3;
+
+                    // Pastikan baris memiliki isi pertanyaan dan opsi A
+                    if(q && a) { 
+                        newQuestions.push({
+                            q: String(q),
+                            options: [String(a), String(b), String(c), String(d)],
+                            ans: ansIdx
+                        });
+                    }
+                }
+            });
+
+            // Tutup pop-up processing
+            document.body.removeChild(document.body.lastChild);
+
+            if(newQuestions.length > 0) {
+                state.questions = newQuestions;
+                render();
+                showModal('Berhasil memuat ' + newQuestions.length + ' soal. Cek preview di bawah, lalu klik "Simpan Soal ke Server"!');
+            } else {
+                showModal('Gagal membaca data. Pastikan ada 6 kolom yang terisi sesuai format.');
+            }
+        } catch (err) {
+            console.error(err);
+            document.body.removeChild(document.body.lastChild);
+            showModal('Terjadi kesalahan. Pastikan file berupa format Excel yang valid (.xlsx / .csv).');
+        }
+    };
+    reader.readAsArrayBuffer(file);
 }
 
 /* ===== KOMUNIKASI DENGAN GOOGLE SHEET (FETCH) ===== */
