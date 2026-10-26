@@ -13,7 +13,7 @@ html{scroll-padding-top:env(safe-area-inset-top,0px)}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.5}
 .w{max-width:560px;margin:0 auto;padding:16px}.w.d{max-width:1000px}
 .hero{background:#13294B;color:#fff;border-radius:22px;padding:28px 22px;text-align:center}
-.hero h1{margin:6px 0;font-size:34px;line-height:1.1;letter-spacing:-.01em}.hero p{margin:6px 0;color:#DCE6F7}
+.hero h1{margin:6px 0;font-size:32px;line-height:1.2;letter-spacing:-.01em}.hero p{margin:6px 0;color:#DCE6F7;font-size:15px;}
 .flag{height:8px;border-radius:4px;background:linear-gradient(#C00000 50%,#fff 50%);margin:14px 0}
 .c{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;margin:14px 0}
 .b{display:block;width:100%;min-height:52px;border:0;border-radius:14px;background:var(--btn);color:#fff;font:700 17px inherit;font-family:inherit;padding:14px;cursor:pointer;margin:10px 0}
@@ -36,12 +36,11 @@ input,select{width:100%;min-height:48px;border:2px solid var(--line);border-radi
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 table.t{width:100%;border-collapse:collapse;margin:8px 0;font-size:15px}table.t th,table.t td{border:1px solid var(--line);padding:8px;text-align:left}table.t th{background:var(--soft)}
 .sc{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center}.sc div{background:var(--soft);border-radius:14px;padding:12px 4px}.sc b{display:block;font-size:26px}
-.big{font-size:54px;font-weight:800;text-align:center;line-height:1}
 .sw{overflow-x:auto}.sw table{min-width:100%}
 .ov{position:fixed;inset:0;background:rgba(10,20,45,.93);z-index:9;display:flex;align-items:center;justify-content:center;padding:16px}
-body.gm{-webkit-user-select:none;user-select:none}
+.q-card{border: 2px solid var(--line); border-radius: 12px; padding:12px; margin-bottom: 12px; background:var(--bg);}
+.q-card h4{margin: 0 0 10px 0;}
 
-/* Print Styles untuk Panitia */
 @media print {
     body { background: #fff; }
     .no-print { display: none !important; }
@@ -55,14 +54,11 @@ body.gm{-webkit-user-select:none;user-select:none}
 
 <script>
 /* ===== KONFIGURASI ===== */
-var KODE = 'PEMUDA2026', PER_LEVEL = 5, WAKTU = 600, MAKS_PL = 3;
-
-/* ===== PENYIMPANAN ONLINE ===== */
-// URL Deployment Google Apps Script Anda (Contoh)
+// URL Web App Google Apps Script Anda (WAJIB DIPASTIKAN BENAR)
 var SHEET_URL = 'https://script.google.com/macros/s/AKfycbxY0Zru4YhzKeBMUHZrJTqmCSfVJIMe_fc52I1MygTnKtxouLPrmwNbLRW5wu6D_KM2bw/exec';
 
-/* ===== DATA SOAL (Contoh) ===== */
-const quizQuestions = [
+/* ===== DATA SOAL DEFAULT ===== */
+const defaultQuestions = [
     { q: "Siapakah proklamator kemerdekaan Republik Indonesia?", options: ["Ir. Soekarno & Drs. Moh. Hatta", "Soeharto & B.J. Habibie", "Jenderal Sudirman & Bung Tomo", "Sutan Sjahrir & Tan Malaka"], ans: 0 },
     { q: "Apa nama ibukota negara Indonesia saat ini?", options: ["Surabaya", "Bandung", "Jakarta", "Yogyakarta"], ans: 2 },
     { q: "Kapan Hari Sumpah Pemuda diperingati?", options: ["17 Agustus", "28 Oktober", "10 November", "1 Juni"], ans: 1 },
@@ -71,15 +67,17 @@ const quizQuestions = [
 
 /* ===== STATE APLIKASI ===== */
 let state = {
-    view: 'home', // home, peserta_login, panitia_login, quiz, result, panitia_dash
+    view: 'home', 
     user: null,
     currentQuestion: 0,
     score: 0,
     answers: [],
-    adminData: []
+    adminData: [],
+    questions: [],
+    adminTab: 'hasil' // 'hasil' atau 'soal'
 };
 
-// Fungsi Render Utama
+// --- FUNGSI RENDER UTAMA ---
 function render() {
     const app = document.getElementById('app');
     if (state.view === 'home') app.innerHTML = viewHome();
@@ -90,13 +88,12 @@ function render() {
     else if (state.view === 'panitia_dash') app.innerHTML = viewPanitiaDash();
 }
 
-// Komponen Tampilan
 function viewHome() {
     return `
         <div class="w">
             <div class="hero">
-                <h1>Misi Pemuda Cerdas</h1>
-                <p>Platform Ujian & Evaluasi Generasi Bangsa</p>
+                <h1>MISI PEMUDA CERDAS</h1>
+                <p>Lomba Literasi dan Numerasi (LITNUM) dalam rangka Hari Sumpah Pemuda</p>
                 <div class="flag"></div>
             </div>
             <div class="c" style="text-align:center;">
@@ -115,8 +112,8 @@ function viewPesertaLogin() {
                 <h2 style="margin-top:0">Login Peserta</h2>
                 <label>Nama Lengkap</label>
                 <input type="text" id="p_nama" placeholder="Masukkan nama Anda">
-                <label>Asal Sekolah / Instansi</label>
-                <input type="text" id="p_instansi" placeholder="Masukkan asal instansi">
+                <label>Kelas</label>
+                <input type="text" id="p_kelas" placeholder="Masukkan kelas Anda">
                 <button class="b" style="margin-top:20px" onclick="startQuiz()">Mulai Mengerjakan</button>
                 <button class="b s" onclick="navigate('home')">Kembali</button>
             </div>
@@ -139,7 +136,8 @@ function viewPanitiaLogin() {
 }
 
 function viewQuiz() {
-    const q = quizQuestions[state.currentQuestion];
+    if(state.questions.length === 0) return `<div class="w"><div class="c">Memuat soal...</div></div>`;
+    const q = state.questions[state.currentQuestion];
     let optionsHtml = '';
     q.options.forEach((opt, idx) => {
         optionsHtml += `<button class="o" onclick="answerQuestion(${idx})">${opt}</button>`;
@@ -149,10 +147,10 @@ function viewQuiz() {
         <div class="w">
             <div class="c">
                 <div class="top">
-                    <span>Soal ${state.currentQuestion + 1} / ${quizQuestions.length}</span>
+                    <span>Soal ${state.currentQuestion + 1} / ${state.questions.length}</span>
                     <span class="tag">${state.user.nama}</span>
                 </div>
-                <div class="bar" style="margin: 10px 0;"><i style="width: ${((state.currentQuestion) / quizQuestions.length) * 100}%"></i></div>
+                <div class="bar" style="margin: 10px 0;"><i style="width: ${((state.currentQuestion) / state.questions.length) * 100}%"></i></div>
                 <div class="q">${q.q}</div>
                 ${optionsHtml}
             </div>
@@ -177,6 +175,33 @@ function viewResult() {
 }
 
 function viewPanitiaDash() {
+    let content = '';
+    if(state.adminTab === 'hasil') {
+        content = renderAdminHasil();
+    } else {
+        content = renderAdminSoal();
+    }
+
+    return `
+        <div class="w d">
+            <div class="c">
+                <div class="top no-print">
+                    <h2>Dashboard Panitia</h2>
+                    <div>
+                        <button class="b s" style="display:inline-block; width:auto; min-height:auto; padding:8px 16px; margin:0; ${state.adminTab==='hasil'?'background:var(--blue);color:#fff;':''}" onclick="state.adminTab='hasil'; render()">Hasil Ujian</button>
+                        <button class="b s" style="display:inline-block; width:auto; min-height:auto; padding:8px 16px; margin:0; ${state.adminTab==='soal'?'background:var(--blue);color:#fff;':''}" onclick="state.adminTab='soal'; render()">Kelola Soal</button>
+                        <button class="b" style="display:inline-block; width:auto; min-height:auto; padding:8px 16px; margin:0; background:var(--bad);" onclick="navigate('home')">Keluar</button>
+                    </div>
+                </div>
+                <div style="margin-top:20px;">
+                    ${content}
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function renderAdminHasil() {
     let rows = '';
     if(state.adminData.length === 0) {
         rows = `<tr><td colspan="4" style="text-align:center">Belum ada data atau sedang memuat...</td></tr>`;
@@ -190,40 +215,58 @@ function viewPanitiaDash() {
             </tr>`;
         });
     }
-
     return `
-        <div class="w d">
-            <div class="c">
-                <div class="top no-print">
-                    <h2>Dashboard Panitia</h2>
-                    <div>
-                        <button class="b s" style="display:inline-block; width:auto; min-height:auto; padding:8px 16px; margin:0" onclick="fetchDataAdmin()">Refresh Data</button>
-                        <button class="b s" style="display:inline-block; width:auto; min-height:auto; padding:8px 16px; margin:0" onclick="window.print()">Cetak (Print)</button>
-                        <button class="b" style="display:inline-block; width:auto; min-height:auto; padding:8px 16px; margin:0; background:var(--bad);" onclick="navigate('home')">Keluar</button>
-                    </div>
-                </div>
-                <div style="margin-top:20px;" class="sw">
-                    <h3>Laporan Hasil Peserta</h3>
-                    <table class="t">
-                        <thead>
-                            <tr>
-                                <th width="50">No</th>
-                                <th>Nama Peserta</th>
-                                <th>Instansi</th>
-                                <th width="100">Skor</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${rows}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+        <div class="no-print" style="margin-bottom:12px;">
+            <button class="b s" style="display:inline-block; width:auto; padding:8px 16px; margin:0" onclick="fetchDataAdmin()">Refresh Data</button>
+            <button class="b y" style="display:inline-block; width:auto; padding:8px 16px; margin:0" onclick="window.print()">Cetak (Print)</button>
+        </div>
+        <div class="sw">
+            <table class="t">
+                <thead><tr><th width="50">No</th><th>Nama Peserta</th><th>Kelas</th><th width="100">Skor</th></tr></thead>
+                <tbody>${rows}</tbody>
+            </table>
         </div>
     `;
 }
 
-/* ===== LOGIKA APLIKASI ===== */
+function renderAdminSoal() {
+    let list = '';
+    state.questions.forEach((q, i) => {
+        list += `
+        <div class="q-card">
+            <h4>Soal ${i+1}</h4>
+            <label>Pertanyaan</label>
+            <input type="text" value="${q.q}" onchange="updateQ(${i}, 'q', this.value)" style="margin-bottom:8px">
+            
+            <label>Opsi Jawaban (A, B, C, D)</label>
+            <input type="text" value="${q.options[0]}" onchange="updateQ(${i}, 'opt', this.value, 0)" style="margin-bottom:4px">
+            <input type="text" value="${q.options[1]}" onchange="updateQ(${i}, 'opt', this.value, 1)" style="margin-bottom:4px">
+            <input type="text" value="${q.options[2]}" onchange="updateQ(${i}, 'opt', this.value, 2)" style="margin-bottom:4px">
+            <input type="text" value="${q.options[3]}" onchange="updateQ(${i}, 'opt', this.value, 3)" style="margin-bottom:8px">
+            
+            <label>Kunci Jawaban Benar</label>
+            <select onchange="updateQ(${i}, 'ans', this.value)">
+                <option value="0" ${q.ans === 0 ? 'selected' : ''}>Opsi A (Pertama)</option>
+                <option value="1" ${q.ans === 1 ? 'selected' : ''}>Opsi B (Kedua)</option>
+                <option value="2" ${q.ans === 2 ? 'selected' : ''}>Opsi C (Ketiga)</option>
+                <option value="3" ${q.ans === 3 ? 'selected' : ''}>Opsi D (Keempat)</option>
+            </select>
+            
+            <button class="b s" style="background:var(--badb); color:var(--bad); margin-top:12px;" onclick="deleteQ(${i})">Hapus Soal Ini</button>
+        </div>`;
+    });
+
+    return `
+        <div class="no-print">
+            <p>Perubahan yang disimpan di sini akan langsung berlaku untuk peserta yang login.</p>
+            ${list}
+            <button class="b y" onclick="addQ()">+ Tambah Soal Baru</button>
+            <button class="b" onclick="saveQuestionsToSheet()">Simpan Soal ke Server</button>
+        </div>
+    `;
+}
+
+// --- LOGIKA APLIKASI ---
 
 function navigate(viewName) {
     state.view = viewName;
@@ -234,38 +277,38 @@ function showModal(msg) {
     const m = document.createElement('div');
     m.className = 'ov';
     m.innerHTML = `<div class="c" style="width:100%; max-width:320px; text-align:center; animation:pop 0.3s">
-        <h3 style="margin-top:0">Pemberitahuan</h3>
+        <h3 style="margin-top:0">Info</h3>
         <p>${msg}</p>
         <button class="b" onclick="this.parentElement.parentElement.remove()">Tutup</button>
     </div>`;
     document.body.appendChild(m);
 }
 
-// Logika Peserta
+// Peserta
 function startQuiz() {
     const nama = document.getElementById('p_nama').value.trim();
-    const instansi = document.getElementById('p_instansi').value.trim();
+    const kelas = document.getElementById('p_kelas').value.trim();
     
-    if(!nama || !instansi) {
-        showModal('Nama dan Instansi wajib diisi!');
-        return;
-    }
+    if(!nama || !kelas) { showModal('Nama dan Kelas wajib diisi!'); return; }
     
-    state.user = { nama, instansi };
+    state.user = { nama, instansi: kelas }; 
     state.currentQuestion = 0;
     state.score = 0;
     state.answers = [];
-    navigate('quiz');
+    
+    // Pastikan soal sudah diload
+    if(state.questions.length === 0) loadQuestions(true);
+    else navigate('quiz');
 }
 
 function answerQuestion(idx) {
-    const isCorrect = (idx === quizQuestions[state.currentQuestion].ans);
-    if(isCorrect) state.score += (100 / quizQuestions.length);
+    const isCorrect = (idx === state.questions[state.currentQuestion].ans);
+    if(isCorrect) state.score += (100 / state.questions.length);
     
     state.answers.push(idx);
     state.currentQuestion++;
     
-    if(state.currentQuestion >= quizQuestions.length) {
+    if(state.currentQuestion >= state.questions.length) {
         finishQuiz();
     } else {
         render();
@@ -273,72 +316,104 @@ function answerQuestion(idx) {
 }
 
 function finishQuiz() {
-    // Simpan ke Google Sheet (Simulasi Fetch API)
     saveDataToSheet(state.user.nama, state.user.instansi, Math.round(state.score));
-    
-    // Tampilkan Hasil
     navigate('result');
 }
 
-// Logika Panitia
+// Panitia
 function loginAdmin() {
     const pass = document.getElementById('a_pass').value;
-    if(pass === 'panitia123') { // Default password
+    if(pass === 'panitia123') { // Ganti password jika diperlukan
+        state.adminTab = 'hasil';
         navigate('panitia_dash');
-        fetchDataAdmin(); // Ambil data saat berhasil login
+        fetchDataAdmin(); 
     } else {
         showModal('Password panitia salah!');
     }
 }
 
-/* ===== INTEGRASI GOOGLE SHEET (SIMULASI/FETCH) ===== */
-// Catatan: Untuk script Google Apps (GAS), pastikan script Anda 
-// di set agar menerima metode GET dan POST (doGet dan doPost)
+// Kelola Soal (Admin)
+function updateQ(idx, field, val, optIdx) {
+    if(field === 'q') state.questions[idx].q = val;
+    if(field === 'ans') state.questions[idx].ans = parseInt(val);
+    if(field === 'opt') state.questions[idx].options[optIdx] = val;
+}
 
-// Array lokal sebagai fallback jika URL GAS belum diatur
-let localDb = [];
+function addQ() {
+    state.questions.push({ q: "Pertanyaan Baru", options: ["Opsi A", "Opsi B", "Opsi C", "Opsi D"], ans: 0 });
+    render();
+}
 
+function deleteQ(idx) {
+    if(confirm("Yakin hapus soal ini?")) {
+        state.questions.splice(idx, 1);
+        render();
+    }
+}
+
+/* ===== KOMUNIKASI DENGAN GOOGLE SHEET (FETCH) ===== */
+
+// 1. Memuat Soal Saat Aplikasi Terbuka
+function loadQuestions(autoStartQuiz = false) {
+    if(!SHEET_URL) {
+        state.questions = JSON.parse(JSON.stringify(defaultQuestions));
+        if(autoStartQuiz) navigate('quiz');
+        return;
+    }
+    fetch(SHEET_URL + "?action=getQuestions")
+        .then(res => res.json())
+        .then(data => {
+            if(data && Array.isArray(data) && data.length > 0) state.questions = data;
+            else state.questions = JSON.parse(JSON.stringify(defaultQuestions));
+            if(autoStartQuiz) navigate('quiz');
+        })
+        .catch(e => {
+            console.log('Gagal ambil soal online, pakai default.', e);
+            state.questions = JSON.parse(JSON.stringify(defaultQuestions));
+            if(autoStartQuiz) navigate('quiz');
+        });
+}
+
+// 2. Menyimpan Perubahan Soal ke Server
+function saveQuestionsToSheet() {
+    showModal('Sedang menyimpan soal...');
+    fetch(SHEET_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: `action=saveQuestions&questions=${encodeURIComponent(JSON.stringify(state.questions))}`
+    })
+    .then(() => {
+        showModal('Berhasil menyimpan daftar soal! Peserta berikutnya akan melihat soal terbaru.');
+    })
+    .catch(e => showModal('Gagal menyimpan. Pastikan URL Script benar.'));
+}
+
+// 3. Menyimpan Nilai Peserta Selesai
 function saveDataToSheet(nama, instansi, skor) {
-    // Simpan ke fallback lokal
-    localDb.push({ nama, instansi, skor });
-    
-    if(!SHEET_URL) return; // Jika tidak ada URL, abaikan request
-    
-    // Kirim data POST (opsional: no-cors bergantung konfigurasi GAS)
+    if(!SHEET_URL) return;
     fetch(SHEET_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: `action=save&nama=${encodeURIComponent(nama)}&instansi=${encodeURIComponent(instansi)}&skor=${skor}`
-    }).catch(e => console.log('Gagal menyimpan ke Sheet online', e));
+    }).catch(e => console.log('Gagal menyimpan hasil', e));
 }
 
+// 4. Mengambil Nilai untuk Dashboard Panitia
 function fetchDataAdmin() {
-    if(!SHEET_URL) {
-        // Gunakan data lokal jika belum ada link Sheet
-        state.adminData = localDb;
-        render();
-        return;
-    }
-
-    // Jika ada link sheet, coba ambil data (Contoh GET request)
+    if(!SHEET_URL) return;
     fetch(SHEET_URL + "?action=get")
         .then(res => res.json())
         .then(data => {
-            if(data && Array.isArray(data)) {
-                state.adminData = data;
-            } else {
-                state.adminData = localDb; // fallback
-            }
+            state.adminData = (data && Array.isArray(data)) ? data : [];
             render();
         })
         .catch(e => {
-            console.log('Gagal mengambil data, menggunakan memori lokal.', e);
-            state.adminData = localDb;
-            render();
+            console.log('Gagal mengambil data peserta', e);
         });
 }
 
-// Inisialisasi awal
+// Jalankan saat pertama kali dibuka
+loadQuestions();
 render();
 </script>
 </body>
