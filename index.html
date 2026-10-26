@@ -29,10 +29,11 @@ input,select{width:100%;min-height:48px;border:2px solid var(--line);border-radi
 .bar{height:10px;background:var(--soft);border-radius:8px;overflow:hidden}.bar i{display:block;height:100%;background:var(--blue);transition:width .3s}
 .top{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:14px;color:var(--mut)}
 .tag{display:inline-block;background:var(--soft);border-radius:30px;padding:4px 12px;font-weight:700;font-size:14px;color:var(--ink)}
-.q{font-size:19px;font-weight:600;margin:12px 0}
-.o{display:block;width:100%;text-align:left;min-height:54px;border:2px solid var(--line);border-radius:14px;background:var(--card);color:var(--ink);font:16px inherit;font-family:inherit;padding:12px 14px;margin:8px 0;cursor:pointer}
+.q{font-size:19px;font-weight:600;margin:12px 0;white-space:pre-wrap;}
+.o{display:block;width:100%;text-align:left;min-height:54px;border:2px solid var(--line);border-radius:14px;background:var(--card);color:var(--ink);font:16px inherit;font-family:inherit;padding:12px 14px;margin:8px 0;cursor:pointer;white-space:pre-wrap;}
 .o.ok{border-color:var(--ok);background:var(--okb);animation:pop .35s}.o.no{border-color:var(--bad);background:var(--badb)}
 .o:hover{border-color:var(--blue)}
+.o.selected{border-color:var(--blue);background:var(--soft);font-weight:600;}
 .fb{border-radius:14px;padding:14px;margin:12px 0}.fb.ok{background:var(--okb)}.fb.no{background:var(--badb)}
 @keyframes pop{50%{transform:scale(1.03)}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
@@ -76,7 +77,8 @@ let state = {
     answers: [],
     adminData: [],
     questions: [],
-    adminTab: 'hasil' // 'hasil' atau 'soal'
+    adminTab: 'hasil', // 'hasil' atau 'soal'
+    selectedOption: null // Tambahan untuk melacak opsi yang sedang dipilih
 };
 
 // --- FUNGSI RENDER UTAMA ---
@@ -142,7 +144,8 @@ function viewQuiz() {
     const q = state.questions[state.currentQuestion];
     let optionsHtml = '';
     q.options.forEach((opt, idx) => {
-        optionsHtml += `<button class="o" onclick="answerQuestion(${idx})">${opt}</button>`;
+        const isSelected = (state.selectedOption === idx) ? 'selected' : '';
+        optionsHtml += `<button class="o ${isSelected}" onclick="selectOption(${idx})">${opt}</button>`;
     });
 
     return `
@@ -155,6 +158,7 @@ function viewQuiz() {
                 <div class="bar" style="margin: 10px 0;"><i style="width: ${((state.currentQuestion) / state.questions.length) * 100}%"></i></div>
                 <div class="q">${q.q}</div>
                 ${optionsHtml}
+                <button class="b" style="margin-top:20px" onclick="submitAnswer()" ${state.selectedOption === null ? 'disabled' : ''}>Jawab</button>
             </div>
         </div>
     `;
@@ -291,17 +295,26 @@ function startQuiz() {
     state.currentQuestion = 0;
     state.score = 0;
     state.answers = [];
+    state.selectedOption = null;
     
     // Pastikan soal sudah diload
     if(state.questions.length === 0) loadQuestions(true);
     else navigate('quiz');
 }
 
-function answerQuestion(idx) {
-    const isCorrect = (idx === state.questions[state.currentQuestion].ans);
+function selectOption(idx) {
+    state.selectedOption = idx;
+    render();
+}
+
+function submitAnswer() {
+    if(state.selectedOption === null) return; // Mencegah submit jika belum memilih
+    
+    const isCorrect = (state.selectedOption === state.questions[state.currentQuestion].ans);
     if(isCorrect) state.score += (100 / state.questions.length);
     
-    state.answers.push(idx);
+    state.answers.push(state.selectedOption);
+    state.selectedOption = null; // Reset pilihan untuk soal berikutnya
     state.currentQuestion++;
     
     if(state.currentQuestion >= state.questions.length) {
