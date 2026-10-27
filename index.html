@@ -230,13 +230,13 @@ function viewResult() {
                         <div class="cert-decor-1"></div><div class="cert-decor-2"></div>
                         <div class="cert-inner">
                             <div class="cert-header">
-                                <!-- Format gambar diubah ke .png sesuai dengan yang ada di repo GitHub Anda -->
-                                <img src="LOGO SMK 45.png" alt="Logo SMK">
+                                <!-- Path gambar diperbaiki menggunakan %20 untuk menggantikan spasi -->
+                                <img src="./LOGO%20SMK%2045.png" alt="Logo SMK" crossorigin="anonymous">
                                 <div class="cert-header-text">
                                     <h3>Festival Literasi dan Numerasi</h3>
                                     <p>Misi Pemuda Cerdas - Hari Sumpah Pemuda</p>
                                 </div>
-                                <img src="Logo Festival Literasi LITNUM FEST.png" alt="Logo Litnum">
+                                <img src="./Logo%20Festival%20Literasi%20LITNUM%20FEST.png" alt="Logo Litnum" crossorigin="anonymous">
                             </div>
                             
                             <div class="cert-title-container">
@@ -285,6 +285,7 @@ function downloadCertificate() {
     html2canvas(cert, { 
         scale: 2, // Kualitas tinggi
         useCORS: true, 
+        allowTaint: true, // Tambahan agar gambar tidak diblokir saat diunduh
         backgroundColor: "#ffffff"
     }).then(canvas => {
         const link = document.createElement('a');
