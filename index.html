@@ -46,41 +46,55 @@ table.t{width:100%;border-collapse:collapse;margin:8px 0;font-size:15px}table.t 
 .q-card{border: 2px solid var(--line); border-radius: 12px; padding:12px; margin-bottom: 12px; background:var(--bg);}
 .q-card h4{margin: 0 0 10px 0;}
 
+/* Tambahan untuk kategori skor, feedback, dan timer */
+.score-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
+.score-box { background: #EAF0FF; padding: 16px 8px; border-radius: 12px; text-align: center; }
+.score-box span { display: block; font-size: 13px; color: var(--mut); margin-bottom: 4px; }
+.score-box b { font-size: 24px; color: var(--ink); }
+.feedback-box { padding: 16px; border-radius: 12px; margin: 16px 0; font-size: 15px; }
+.feedback-box.ok { background: #E8F5E9; border: 1px solid #4CAF50; color: #1B5E20; }
+.feedback-box.no { background: #FFEBEE; border: 1px solid #F44336; color: #B71C1C; }
+.timer-box { font-weight: bold; color: var(--bad); font-size: 18px; text-align: center; padding: 8px; background: var(--badb); border-radius: 8px; margin-bottom: 12px; }
+@media (max-width: 500px) { .score-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; } }
+
 /* Gaya Desain Mewah Hasil & Sertifikat */
 .lux-card { background: linear-gradient(135deg, var(--card), var(--soft)); border: 1px solid var(--line); border-radius: 20px; padding: 40px 20px; box-shadow: 0 10px 30px rgba(31, 78, 156, 0.08); text-align: center; margin-bottom: 20px; }
 .score-circle { width: 140px; height: 140px; background: linear-gradient(135deg, var(--btn), var(--blue)); border-radius: 50%; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 25px auto; box-shadow: 0 10px 25px rgba(31, 95, 184, 0.4); border: 6px solid var(--card); }
 .score-circle b { font-size: 52px; line-height: 1.1; }
 .cert-wrapper { overflow-x: auto; padding: 20px 0; background: #e9eff5; border-radius: 14px; margin-top: 10px; display: flex; justify-content: center; box-shadow: inset 0 4px 10px rgba(0,0,0,0.05); }
 
-/* Pengaturan Presisi A4 Landscape = 1123px x 794px, Margin 1 inch = 96px padding */
-.cert { width: 1123px; min-width: 1123px; height: 794px; background: #fff; position: relative; padding: 96px; box-sizing: border-box; color: #14213D; font-family: 'Segoe UI', system-ui, sans-serif; overflow: hidden; }
-/* Ornamen Sudut Mewah */
-.cert::before { content: ""; position: absolute; top: 0; left: 0; border-top: 120px solid #C00000; border-right: 120px solid transparent; }
-.cert::after { content: ""; position: absolute; bottom: 0; right: 0; border-bottom: 120px solid #C00000; border-left: 120px solid transparent; }
-.cert-decor-1 { position: absolute; top: 0; left: 0; border-top: 60px solid #F2B705; border-right: 60px solid transparent; z-index: 2; }
-.cert-decor-2 { position: absolute; bottom: 0; right: 0; border-bottom: 60px solid #F2B705; border-left: 60px solid transparent; z-index: 2; }
+/* Pengaturan Sertifikat A4 Landscape - Desain Minimalis Sesuai Gambar */
+.cert { 
+    width: 1123px; min-width: 1123px; height: 794px; 
+    background: #14213D; /* Warna bingkai luar (Biru Dongker) */
+    position: relative; 
+    padding: 18px; /* Ketebalan bingkai luar */
+    box-sizing: border-box; 
+    color: #14213D; 
+    font-family: 'Segoe UI', system-ui, sans-serif; 
+}
+.cert-border-inner { 
+    background: #fff; 
+    width: 100%; height: 100%; 
+    position: relative; 
+    display: flex; flex-direction: column;
+}
+.cert-top-stripe { 
+    width: 95%; 
+    margin: 30px auto 10px; 
+}
+.cert-content { 
+    flex: 1; display: flex; flex-direction: column; 
+    align-items: center; justify-content: center; 
+    text-align: center; padding: 0 50px; 
+}
+.cert-logos { display: flex; gap: 30px; justify-content: center; margin-bottom: 25px; }
+.cert-logos img { height: 110px; object-fit: contain; } /* Ukuran logo disesuaikan */
 
-.cert-inner { height: 100%; position: relative; z-index: 3; display: flex; flex-direction: column; align-items: center; justify-content: space-between; }
-.cert-header { display: flex; align-items: center; justify-content: center; gap: 30px; width: 100%; margin-bottom: 10px; }
-.cert-header img { height: 85px; object-fit: contain; }
-.cert-header-text { text-align: center; }
-.cert-header-text h3 { margin: 0; font-size: 22px; color: #14213D; text-transform: uppercase; letter-spacing: 2px; font-weight: 900; }
-.cert-header-text p { margin: 4px 0 0 0; font-size: 15px; color: #55627F; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
-
-.cert-title-container { display: flex; align-items: center; justify-content: center; gap: 20px; margin: 15px 0; }
-.cert-title-left { color: #F2B705; text-align: right; text-transform: uppercase; font-weight: 900; font-size: 26px; line-height: 1.1; border-right: 3px solid #C00000; padding-right: 20px; }
-.cert-title-right { font-size: 95px; font-family: 'Brush Script MT', 'Great Vibes', 'Dancing Script', cursive; color: #C00000; line-height: 0.8; margin: 0; padding-left: 10px; font-weight: normal; }
-
-.cert-subtitle { font-size: 18px; color: #333; margin: 20px 0; font-weight: 600; letter-spacing: 1px; }
-.cert-name { font-size: 48px; font-weight: bold; color: #14213D; border-bottom: 2px solid #333; display: inline-block; min-width: 650px; padding: 0 40px 10px; text-align: center; margin-bottom: 25px; font-family: 'Times New Roman', serif; text-transform: uppercase; }
-.cert-desc { font-size: 20px; line-height: 1.6; max-width: 850px; text-align: center; color: #333; font-weight: 500; }
-.cert-score { font-size: 28px; font-weight: 900; color: #C00000; margin-top: 15px; letter-spacing: 2px; }
-
-.cert-footer { display: flex; justify-content: space-between; width: 85%; margin-top: auto; }
-.cert-sign { text-align: center; width: 300px; }
-.cert-sign .line { width: 100%; border-bottom: 1px solid #14213D; margin: 0 auto 8px; }
-.cert-sign p { margin: 0; font-size: 19px; color: #14213D; font-weight: bold; }
-.cert-sign span { font-size: 16px; color: #55627F; font-weight: 600; }
+.cert-score-grid { display: flex; justify-content: center; gap: 30px; margin: 30px 0; width: 100%; }
+.cert-score-box-inner { background: #EAF0FF; border-radius: 12px; padding: 18px 20px; min-width: 170px; }
+.cert-score-box-inner span { display: block; font-size: 16px; color: #55627F; margin-bottom: 8px; }
+.cert-score-box-inner b { display: block; font-size: 42px; color: #14213D; }
 
 @media print {
     body { background: #fff; }
@@ -100,10 +114,10 @@ var SHEET_URL = 'https://script.google.com/macros/s/AKfycbzPuXCLgDflKpk4SAWmyzIZ
 
 /* ===== DATA SOAL DEFAULT ===== */
 const defaultQuestions = [
-    { q: "Siapakah proklamator kemerdekaan Republik Indonesia?", options: ["Ir. Soekarno & Drs. Moh. Hatta", "Soeharto & B.J. Habibie", "Jenderal Sudirman & Bung Tomo", "Sutan Sjahrir & Tan Malaka"], ans: 0 },
-    { q: "Apa nama ibukota negara Indonesia saat ini?", options: ["Surabaya", "Bandung", "Jakarta", "Yogyakarta"], ans: 2 },
-    { q: "Kapan Hari Sumpah Pemuda diperingati?", options: ["17 Agustus", "28 Oktober", "10 November", "1 Juni"], ans: 1 },
-    { q: "Lagu kebangsaan Indonesia Raya diciptakan oleh?", options: ["Ibu Sud", "W.R. Supratman", "Ismail Marzuki", "C. Simanjuntak"], ans: 1 }
+    { q: "Siapakah proklamator kemerdekaan Republik Indonesia?", options: ["Ir. Soekarno & Drs. Moh. Hatta", "Soeharto & B.J. Habibie", "Jenderal Sudirman & Bung Tomo", "Sutan Sjahrir & Tan Malaka"], ans: 0, kategori: "Literasi", pembahasan: "Ir. Soekarno dan Drs. Moh. Hatta membacakan teks proklamasi pada 17 Agustus 1945." },
+    { q: "Andi membeli barang seharga Rp120.000. Syarat diskon minimal pembelian Rp100.000. Apakah Andi memenuhi syarat?", options: ["Tidak, karena harus membeli Rp200.000", "Tidak, karena harga terlalu mahal", "Ya, karena diskonnya 20%", "Ya, karena Rp120.000 lebih dari Rp100.000"], ans: 3, kategori: "Numerasi", pembahasan: "Syarat minimal adalah Rp100.000, dan Rp120.000 sudah melebihi batas tersebut." },
+    { q: "Semua mamalia bernapas dengan paru-paru. Paus adalah mamalia. Kesimpulannya?", options: ["Paus bernapas dengan insang", "Paus bukan mamalia", "Paus bernapas dengan paru-paru", "Paus hidup di air"], ans: 2, kategori: "Penalaran", pembahasan: "Karena paus masuk dalam kategori mamalia, maka sesuai premis ia bernapas dengan paru-paru." },
+    { q: "Lagu kebangsaan Indonesia Raya diciptakan oleh?", options: ["Ibu Sud", "W.R. Supratman", "Ismail Marzuki", "C. Simanjuntak"], ans: 1, kategori: "Literasi", pembahasan: "W.R. Supratman pertama kali memperdengarkan lagu ini pada Kongres Pemuda II tahun 1928." }
 ];
 
 /* ===== STATE APLIKASI ===== */
@@ -112,11 +126,17 @@ let state = {
     user: null,
     currentQuestion: 0,
     score: 0,
+    scores: { Literasi: 0, Numerasi: 0, Penalaran: 0 },
     answers: [],
     adminData: [],
     questions: [],
-    adminTab: 'hasil', // 'hasil' atau 'soal'
-    selectedOption: null // Tambahan untuk melacak opsi yang sedang dipilih
+    waktuUjian: 10, // Default Waktu Ujian: 10 Menit sesuai permintaan
+    timeRemaining: 0,
+    timerInterval: null,
+    tabViolations: 0,
+    adminTab: 'hasil',
+    selectedOption: null,
+    answerSubmitted: false
 };
 
 // --- FUNGSI RENDER UTAMA ---
@@ -155,7 +175,7 @@ function viewPesertaLogin() {
                 <label>Nama Lengkap</label>
                 <input type="text" id="p_nama" placeholder="Masukkan nama Anda">
                 <label>Kelas</label>
-                <input type="text" id="p_kelas" placeholder="Masukkan kelas Anda">
+                <input type="text" id="p_kelas" placeholder="Masukkan kelas Anda (contoh: X AKL 1)">
                 <button class="b" style="margin-top:20px" onclick="startQuiz()">Mulai Mengerjakan</button>
                 <button class="b s" onclick="navigate('home')">Kembali</button>
             </div>
@@ -181,14 +201,41 @@ function viewQuiz() {
     if(state.questions.length === 0) return `<div class="w"><div class="c">Memuat soal...</div></div>`;
     const q = state.questions[state.currentQuestion];
     let optionsHtml = '';
+    
     q.options.forEach((opt, idx) => {
-        const isSelected = (state.selectedOption === idx) ? 'selected' : '';
-        optionsHtml += `<button class="o ${isSelected}" onclick="selectOption(${idx})">${opt}</button>`;
+        let isSelected = (state.selectedOption === idx) ? 'selected' : '';
+        let extraClass = '';
+        
+        if (state.answerSubmitted) {
+            if (idx === q.ans) extraClass = 'ok';
+            else if (idx === state.selectedOption) extraClass = 'no';
+        }
+        
+        optionsHtml += `<button class="o ${isSelected} ${extraClass}" onclick="selectOption(${idx})" ${state.answerSubmitted ? 'disabled' : ''}>${opt}</button>`;
     });
+
+    let feedbackHtml = '';
+    if (state.answerSubmitted) {
+        const isCorrect = (state.selectedOption === q.ans);
+        const feedbackText = isCorrect ? '<b>BENAR!</b> Hebat! Kamu berhasil menjawab dengan tepat.' : '<b>Belum tepat.</b> Coba perhatikan kembali informasi dalam soal. Salah itu bagian dari belajar.';
+        const feedbackClass = isCorrect ? 'ok' : 'no';
+        feedbackHtml = `
+            <div class="feedback-box ${feedbackClass}">
+                ${feedbackText}<br><br>
+                <b>Pembahasan:</b> ${q.pembahasan || 'Tidak ada pembahasan.'}
+            </div>
+            <button class="b" onclick="nextQuestion()">LANJUT</button>
+        `;
+    }
+
+    const minutes = Math.floor(state.timeRemaining / 60);
+    const seconds = state.timeRemaining % 60;
+    const timeString = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 
     return `
         <div class="w">
             <div class="c">
+                <div class="timer-box">⏳ Waktu Tersisa: <span id="timerText">${timeString}</span></div>
                 <div class="top">
                     <span>Soal ${state.currentQuestion + 1} / ${state.questions.length}</span>
                     <span class="tag">${state.user.nama}</span>
@@ -196,22 +243,29 @@ function viewQuiz() {
                 <div class="bar" style="margin: 10px 0;"><i style="width: ${((state.currentQuestion) / state.questions.length) * 100}%"></i></div>
                 <div class="q">${q.q}</div>
                 ${optionsHtml}
-                <button class="b" style="margin-top:20px" onclick="submitAnswer()" ${state.selectedOption === null ? 'disabled' : ''}>Jawab</button>
+                ${!state.answerSubmitted ? `<button class="b" style="margin-top:20px" onclick="submitAnswer()" ${state.selectedOption === null ? 'disabled' : ''}>Jawab</button>` : feedbackHtml}
             </div>
         </div>
     `;
 }
 
 function viewResult() {
+    const certNo = `MPC-${Math.random().toString(36).substr(2, 8).toUpperCase()}`;
+    const today = new Date().toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'});
+
     return `
         <div class="w d">
             <div class="lux-card">
                 <h2 style="color:var(--btn); margin-top:0; font-size:32px; font-weight:800;">Ujian Selesai!</h2>
                 <p style="font-size:17px;">Terima kasih, <b>${state.user.nama}</b> telah menyelesaikan ujian dengan baik.</p>
-                <div class="score-circle">
-                    <b>${Math.round(state.score)}</b>
-                    <span style="font-size:15px; opacity:0.9; margin-top:4px;">Skor Akhir</span>
+                
+                <div class="score-grid">
+                    <div class="score-box"><span>Literasi</span><b>${Math.round(state.scores.Literasi || 0)}</b></div>
+                    <div class="score-box"><span>Numerasi</span><b>${Math.round(state.scores.Numerasi || 0)}</b></div>
+                    <div class="score-box"><span>Penalaran</span><b>${Math.round(state.scores.Penalaran || 0)}</b></div>
+                    <div class="score-box"><span>Skor Akhir</span><b>${Math.round(state.score)}</b></div>
                 </div>
+
                 <p style="color:var(--mut); font-size:15px; margin-bottom:28px;">Hasil Anda telah dikirim dan direkam secara otomatis oleh sistem Panitia.</p>
                 
                 <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
@@ -226,48 +280,44 @@ function viewResult() {
             <div class="c" style="overflow:hidden; text-align:center;">
                 <h3 style="margin-top:0; color:var(--ink);">Preview Sertifikat</h3>
                 <div class="cert-wrapper">
+                    <!-- Desain Sertifikat Sesuai Referensi Gambar -->
                     <div class="cert" id="certificateNode">
-                        <div class="cert-decor-1"></div><div class="cert-decor-2"></div>
-                        <div class="cert-inner">
-                            <div class="cert-header">
-                                <!-- Path gambar diperbaiki menggunakan %20 untuk menggantikan spasi -->
-                                <img src="./LOGO%20SMK%2045.png" alt="Logo SMK" crossorigin="anonymous">
-                                <div class="cert-header-text">
-                                    <h3>Festival Literasi dan Numerasi</h3>
-                                    <p>Misi Pemuda Cerdas - Hari Sumpah Pemuda</p>
-                                </div>
-                                <img src="./Logo%20Festival%20Literasi%20LITNUM%20FEST.png" alt="Logo Litnum" crossorigin="anonymous">
+                        <div class="cert-border-inner">
+                            <div class="cert-top-stripe">
+                                <div style="background:#208c43; height:18px; width:100%;"></div>
+                                <div style="background:#f2b705; height:6px; width:100%;"></div>
+                                <div style="background:#1f5fb8; height:18px; width:100%;"></div>
                             </div>
                             
-                            <div class="cert-title-container">
-                                <div class="cert-title-left">LITNUM<br>FEST<br><span style="color:#C00000; font-size:18px;">2026</span></div>
-                                <div class="cert-title-right">Certificate</div>
-                            </div>
-                            <div style="font-size:24px; letter-spacing: 12px; margin-top:-15px; margin-bottom: 15px; font-weight:900; color:#14213D;">O F &nbsp; H O N O U R</div>
-                            
-                            <div class="cert-subtitle">Sertifikat ini diberikan dengan bangga sebagai bentuk penghargaan kepada:</div>
-                            
-                            <div class="cert-name">${state.user.nama}</div>
-                            
-                            <div class="cert-desc">
-                                Atas partisipasi aktif dan pencapaiannya yang luar biasa dalam kompetisi ini.<br>
-                                Telah diselesaikan dengan predikat sangat baik dan memperoleh nilai akhir:
-                                <div class="cert-score">SKOR: ${Math.round(state.score)}</div>
-                            </div>
-                            
-                            <div class="cert-footer">
-                                <div class="cert-sign">
-                                    <div style="height: 70px;"></div>
-                                    <div class="line"></div>
-                                    <p>Drs. Basuni Abubakar, M.Pd.I</p>
-                                    <span>Kepala Sekolah</span>
+                            <div class="cert-content">
+                                <div class="cert-logos">
+                                    <img src="./LOGO%20SMK%2045.png" alt="Logo SMK" crossorigin="anonymous">
+                                    <img src="./Logo%20Festival%20Literasi%20LITNUM%20FEST.png" alt="Logo Litnum" crossorigin="anonymous">
                                 </div>
-                                <div class="cert-sign">
-                                    <div style="height: 70px;"></div>
-                                    <div class="line"></div>
-                                    <p>Rizki Aprilia S.A.B</p>
-                                    <span>Ketua Panitia</span>
+                                
+                                <h4 style="font-size: 22px; font-weight: 700; color: #14213D; margin: 15px 0;">SMK 02 ISLAM 45 AMBULU</h4>
+                                <h1 style="font-size: 58px; font-weight: 800; color: #14213D; margin: 0 0 5px 0; letter-spacing: 2px;">SERTIFIKAT</h1>
+                                <h3 style="font-size: 22px; font-weight: 600; color: #1f5fb8; margin: 0;">MISI PEMUDA CERDAS</h3>
+                                
+                                <p style="font-size: 18px; margin: 35px 0 10px; color: #333;">diberikan kepada</p>
+                                <h2 style="font-size: 54px; margin: 0 0 8px 0; color: #14213D;">${state.user.nama}</h2>
+                                <div style="width: 80%; height: 4px; background: #14213D; margin: 0 auto;"></div>
+                                <p style="font-size: 20px; font-weight: 700; margin: 15px 0 35px; color: #14213D;">Kelas ${state.user.instansi}</p>
+                                
+                                <p style="font-size: 18px; margin: 0; color: #333;">telah menyelesaikan Misi Pemuda Cerdas, game literasi numerasi<br>SMK 02 Islam 45 Ambulu, dengan hasil:</p>
+                                
+                                <div class="cert-score-grid">
+                                    <div class="cert-score-box-inner"><span>Literasi</span><b>${Math.round(state.scores.Literasi || 0)}</b></div>
+                                    <div class="cert-score-box-inner"><span>Numerasi</span><b>${Math.round(state.scores.Numerasi || 0)}</b></div>
+                                    <div class="cert-score-box-inner"><span>Penalaran</span><b>${Math.round(state.scores.Penalaran || 0)}</b></div>
+                                    <div class="cert-score-box-inner"><span>Skor Akhir</span><b>${Math.round(state.score)}</b></div>
                                 </div>
+                                
+                                <h3 style="font-size: 26px; font-weight: 700; color: #14213D; margin: 0 0 10px 0;">MASTER PEMUDA CERDAS</h3>
+                                <p style="font-size: 16px; color: #55627F; margin: 0;">Terus latih literasi dan numerasimu karena digunakan setiap hari.</p>
+                                
+                                <!-- Bagian tanda tangan dihilangkan sesuai permintaan -->
+                                <p style="font-size: 14px; color: #777; margin: 40px 0 0 0;">Diterbitkan oleh Kesiswaan SMK 02 Islam 45 Ambulu<br>${today} | No. ${certNo}</p>
                             </div>
                         </div>
                     </div>
@@ -283,16 +333,16 @@ function downloadCertificate() {
     showModal('Sedang menyiapkan sertifikat, mohon tunggu sebentar...');
     
     html2canvas(cert, { 
-        scale: 2, // Kualitas tinggi
+        scale: 2,
         useCORS: true, 
-        allowTaint: true, // Tambahan agar gambar tidak diblokir saat diunduh
-        backgroundColor: "#ffffff"
+        allowTaint: true,
+        backgroundColor: "#14213D"
     }).then(canvas => {
         const link = document.createElement('a');
         link.download = `Sertifikat_LITNUM_${state.user.nama}.png`;
         link.href = canvas.toDataURL('image/png');
         link.click();
-        document.body.removeChild(document.body.lastChild); // tutup pop-up modal
+        document.body.removeChild(document.body.lastChild);
     }).catch(err => {
         console.error(err);
         document.body.removeChild(document.body.lastChild);
@@ -360,28 +410,37 @@ function renderAdminSoal() {
     state.questions.forEach((q, i) => {
         list += `
         <div class="q-card" style="font-size:14px;">
-            <b>${i+1}. ${q.q}</b><br>
+            <b>${i+1}. [${q.kategori || 'Umum'}] ${q.q}</b><br>
             <span style="color:${q.ans===0?'var(--ok)':'inherit'}">A. ${q.options[0]}</span> | 
             <span style="color:${q.ans===1?'var(--ok)':'inherit'}">B. ${q.options[1]}</span> | 
             <span style="color:${q.ans===2?'var(--ok)':'inherit'}">C. ${q.options[2]}</span> | 
-            <span style="color:${q.ans===3?'var(--ok)':'inherit'}">D. ${q.options[3]}</span>
+            <span style="color:${q.ans===3?'var(--ok)':'inherit'}">D. ${q.options[3]}</span><br>
+            <i style="color:var(--mut); font-size:12px;">Pembahasan: ${q.pembahasan || '-'}</i>
         </div>`;
     });
 
     return `
         <div class="no-print">
             <div style="background:var(--soft); padding:16px; border-radius:12px; margin-bottom:16px;">
+                <h3 style="margin-top:0; margin-bottom:8px;">Pengaturan Ujian</h3>
+                <label>Batas Waktu Pengerjaan (Menit)</label>
+                <!-- Nilai default 10 menit sudah disiapkan di sini -->
+                <input type="number" id="waktuUjianInput" value="${state.waktuUjian}" style="margin-bottom:8px; width:100px; font-weight:bold;">
+                <p style="font-size:13px; color:var(--mut); margin-top:0; margin-bottom:16px;">
+                    Ubah angka di atas untuk mengatur ulang durasi ujian siswa (misal: 10 untuk 10 menit).
+                </p>
+
                 <h3 style="margin-top:0; margin-bottom:8px;">Upload Soal via Excel</h3>
-                <p style="font-size:14px; margin-top:0;">Buat file Excel dengan 6 kolom berurutan:<br>
-                <b>Pertanyaan | Opsi A | Opsi B | Opsi C | Opsi D | Jawaban</b><br>
-                <i>(Pada kolom Jawaban, cukup ketik huruf: A, B, C, atau D)</i></p>
+                <p style="font-size:14px; margin-top:0;">Buat file Excel dengan 8 kolom berurutan:<br>
+                <b>Pertanyaan | Opsi A | Opsi B | Opsi C | Opsi D | Jawaban | Kategori | Pembahasan</b><br>
+                <i>(Kategori isi dengan: Literasi, Numerasi, atau Penalaran)</i></p>
                 
                 <input type="file" id="fileUpload" accept=".xlsx, .xls, .csv" style="margin-top:8px; padding:10px; background:#fff; width:100%; border-radius:8px;" onchange="handleFileUpload(event)">
             </div>
             
             <h3 style="margin-top:0">Preview Soal (${state.questions.length})</h3>
             ${list}
-            <button class="b y" style="margin-top:16px;" onclick="saveQuestionsToSheet()">Simpan Soal ke Server</button>
+            <button class="b y" style="margin-top:16px;" onclick="saveQuestionsToSheet()">Simpan Pengaturan & Soal ke Server</button>
         </div>
     `;
 }
@@ -414,27 +473,83 @@ function startQuiz() {
     state.user = { nama, instansi: kelas }; 
     state.currentQuestion = 0;
     state.score = 0;
+    state.scores = { Literasi: 0, Numerasi: 0, Penalaran: 0 };
     state.answers = [];
     state.selectedOption = null;
+    state.answerSubmitted = false;
+    state.tabViolations = 0;
     
-    // Pastikan soal sudah diload
+    state.timeRemaining = state.waktuUjian * 60;
+    if (state.timerInterval) clearInterval(state.timerInterval);
+    
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    
     if(state.questions.length === 0) loadQuestions(true);
-    else navigate('quiz');
+    else initQuizTimer();
+}
+
+function initQuizTimer() {
+    navigate('quiz');
+    state.timerInterval = setInterval(() => {
+        state.timeRemaining--;
+        if(state.timeRemaining <= 0) {
+            clearInterval(state.timerInterval);
+            finishQuiz(true, "Waktu habis! Jawaban Anda telah dikumpulkan otomatis.");
+        } else {
+            const timerEl = document.getElementById('timerText');
+            if(timerEl) {
+                const m = Math.floor(state.timeRemaining / 60);
+                const s = state.timeRemaining % 60;
+                timerEl.innerText = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            }
+        }
+    }, 1000);
+}
+
+function handleVisibilityChange() {
+    if (document.hidden && state.view === 'quiz') {
+        state.tabViolations++;
+        if (state.tabViolations >= 3) {
+            finishQuiz(true, "Anda telah keluar dari halaman ujian sebanyak 3 kali. Ujian dihentikan otomatis.");
+        } else {
+            showModal(`Peringatan (${state.tabViolations}/3): Jangan keluar dari halaman ujian atau berpindah tab/aplikasi! Jika mencapai 3 kali, ujian akan dihentikan.`);
+        }
+    }
 }
 
 function selectOption(idx) {
+    if (state.answerSubmitted) return;
     state.selectedOption = idx;
     render();
 }
 
 function submitAnswer() {
-    if(state.selectedOption === null) return; // Mencegah submit jika belum memilih
+    if(state.selectedOption === null) return; 
     
-    const isCorrect = (state.selectedOption === state.questions[state.currentQuestion].ans);
-    if(isCorrect) state.score += (100 / state.questions.length);
+    const q = state.questions[state.currentQuestion];
+    const isCorrect = (state.selectedOption === q.ans);
+    
+    const totalSoalKategori = state.questions.filter(x => x.kategori === q.kategori).length || 1;
+    const poinKategori = 100 / totalSoalKategori; 
+    const poinTotal = 100 / state.questions.length;
+    
+    if(isCorrect) {
+        state.score += poinTotal;
+        if(q.kategori && state.scores[q.kategori] !== undefined) {
+            state.scores[q.kategori] += poinKategori;
+        } else if (q.kategori) {
+            state.scores[q.kategori] = poinKategori;
+        }
+    }
     
     state.answers.push(state.selectedOption);
-    state.selectedOption = null; // Reset pilihan untuk soal berikutnya
+    state.answerSubmitted = true;
+    render();
+}
+
+function nextQuestion() {
+    state.selectedOption = null; 
+    state.answerSubmitted = false;
     state.currentQuestion++;
     
     if(state.currentQuestion >= state.questions.length) {
@@ -444,15 +559,20 @@ function submitAnswer() {
     }
 }
 
-function finishQuiz() {
+function finishQuiz(forced = false, msg = "") {
+    clearInterval(state.timerInterval);
+    document.removeEventListener('visibilitychange', handleVisibilityChange);
     saveDataToSheet(state.user.nama, state.user.instansi, Math.round(state.score));
     navigate('result');
+    if(forced) {
+        setTimeout(() => showModal(msg), 500);
+    }
 }
 
 // Panitia
 function loginAdmin() {
     const pass = document.getElementById('a_pass').value;
-    if(pass === 'panitia123') { // Ganti password jika diperlukan
+    if(pass === 'panitia123') { 
         state.adminTab = 'hasil';
         navigate('panitia_dash');
         fetchDataAdmin(); 
@@ -461,7 +581,6 @@ function loginAdmin() {
     }
 }
 
-// Kelola Soal (Admin) - Fungsi Baca Excel
 function handleFileUpload(event) {
     const file = event.target.files[0];
     if(!file) return;
@@ -478,7 +597,6 @@ function handleFileUpload(event) {
 
             let newQuestions = [];
             json.forEach(row => {
-                // Menggunakan index kolom agar penamaan header di baris 1 bebas
                 const keys = Object.keys(row);
                 if(keys.length >= 6) {
                     const q = row[keys[0]];
@@ -487,32 +605,34 @@ function handleFileUpload(event) {
                     const c = row[keys[3]];
                     const d = row[keys[4]];
                     const ansStr = String(row[keys[5]]).toUpperCase().trim();
+                    const kategori = keys.length >= 7 ? row[keys[6]] : "Umum";
+                    const pembahasan = keys.length >= 8 ? row[keys[7]] : "";
 
-                    let ansIdx = 0; // Default A
+                    let ansIdx = 0; 
                     if(ansStr === 'B') ansIdx = 1;
                     else if(ansStr === 'C') ansIdx = 2;
                     else if(ansStr === 'D') ansIdx = 3;
 
-                    // Pastikan baris memiliki isi pertanyaan dan opsi A
                     if(q && a) { 
                         newQuestions.push({
                             q: String(q),
                             options: [String(a), String(b), String(c), String(d)],
-                            ans: ansIdx
+                            ans: ansIdx,
+                            kategori: String(kategori),
+                            pembahasan: String(pembahasan)
                         });
                     }
                 }
             });
 
-            // Tutup pop-up processing
             document.body.removeChild(document.body.lastChild);
 
             if(newQuestions.length > 0) {
                 state.questions = newQuestions;
                 render();
-                showModal('Berhasil memuat ' + newQuestions.length + ' soal. Cek preview di bawah, lalu klik "Simpan Soal ke Server"!');
+                showModal('Berhasil memuat ' + newQuestions.length + ' soal. Cek preview di bawah, lalu klik "Simpan Pengaturan & Soal ke Server"!');
             } else {
-                showModal('Gagal membaca data. Pastikan ada 6 kolom yang terisi sesuai format.');
+                showModal('Gagal membaca data. Pastikan ada minimal 6 kolom yang terisi sesuai format.');
             }
         } catch (err) {
             console.error(err);
@@ -523,44 +643,55 @@ function handleFileUpload(event) {
     reader.readAsArrayBuffer(file);
 }
 
-/* ===== KOMUNIKASI DENGAN GOOGLE SHEET (FETCH) ===== */
-
-// 1. Memuat Soal Saat Aplikasi Terbuka
 function loadQuestions(autoStartQuiz = false) {
     if(!SHEET_URL) {
         state.questions = JSON.parse(JSON.stringify(defaultQuestions));
-        if(autoStartQuiz) navigate('quiz');
+        if(autoStartQuiz) initQuizTimer();
         return;
     }
     fetch(SHEET_URL + "?action=getQuestions")
         .then(res => res.json())
         .then(data => {
-            if(data && Array.isArray(data) && data.length > 0) state.questions = data;
-            else state.questions = JSON.parse(JSON.stringify(defaultQuestions));
-            if(autoStartQuiz) navigate('quiz');
+            if (Array.isArray(data) && data.length > 0) {
+                state.questions = data;
+            } else if (data && data.questions && data.questions.length > 0) {
+                state.questions = data.questions;
+                // Tetapkan 10 sebagai default/fallback jika tidak terbaca dari server
+                state.waktuUjian = data.waktu || 10; 
+            } else {
+                state.questions = JSON.parse(JSON.stringify(defaultQuestions));
+            }
+            if(autoStartQuiz) initQuizTimer();
         })
         .catch(e => {
             console.log('Gagal ambil soal online, pakai default.', e);
             state.questions = JSON.parse(JSON.stringify(defaultQuestions));
-            if(autoStartQuiz) navigate('quiz');
+            if(autoStartQuiz) initQuizTimer();
         });
 }
 
-// 2. Menyimpan Perubahan Soal ke Server
 function saveQuestionsToSheet() {
-    showModal('Sedang menyimpan soal...');
+    const waktuInput = document.getElementById('waktuUjianInput');
+    // Ambil angka dari inputan panitia, jika kosong pakai 10 menit
+    if (waktuInput) state.waktuUjian = parseInt(waktuInput.value) || 10;
+    
+    const payload = JSON.stringify({
+        waktu: state.waktuUjian,
+        questions: state.questions
+    });
+    
+    showModal('Sedang menyimpan pengaturan & soal...');
     fetch(SHEET_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: `action=saveQuestions&questions=${encodeURIComponent(JSON.stringify(state.questions))}`
+        body: `action=saveQuestions&questions=${encodeURIComponent(payload)}`
     })
     .then(() => {
-        showModal('Berhasil menyimpan daftar soal! Peserta berikutnya akan melihat soal terbaru.');
+        showModal('Berhasil menyimpan pengaturan (waktu: ' + state.waktuUjian + ' menit) dan soal! Peserta yang login setelah ini akan memakai aturan baru.');
     })
     .catch(e => showModal('Gagal menyimpan. Pastikan URL Script benar.'));
 }
 
-// 3. Menyimpan Nilai Peserta Selesai
 function saveDataToSheet(nama, instansi, skor) {
     if(!SHEET_URL) return;
     fetch(SHEET_URL, {
@@ -570,7 +701,6 @@ function saveDataToSheet(nama, instansi, skor) {
     }).catch(e => console.log('Gagal menyimpan hasil', e));
 }
 
-// 4. Mengambil Nilai untuk Dashboard Panitia
 function fetchDataAdmin() {
     if(!SHEET_URL) return;
     fetch(SHEET_URL + "?action=get")
