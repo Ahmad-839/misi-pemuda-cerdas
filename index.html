@@ -59,8 +59,6 @@ table.t{width:100%;border-collapse:collapse;margin:8px 0;font-size:15px}table.t 
 
 /* Gaya Desain Mewah Hasil & Sertifikat */
 .lux-card { background: linear-gradient(135deg, var(--card), var(--soft)); border: 1px solid var(--line); border-radius: 20px; padding: 40px 20px; box-shadow: 0 10px 30px rgba(31, 78, 156, 0.08); text-align: center; margin-bottom: 20px; }
-.score-circle { width: 140px; height: 140px; background: linear-gradient(135deg, var(--btn), var(--blue)); border-radius: 50%; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 25px auto; box-shadow: 0 10px 25px rgba(31, 95, 184, 0.4); border: 6px solid var(--card); }
-.score-circle b { font-size: 52px; line-height: 1.1; }
 .cert-wrapper { overflow-x: auto; padding: 20px 0; background: #e9eff5; border-radius: 14px; margin-top: 10px; display: flex; justify-content: center; box-shadow: inset 0 4px 10px rgba(0,0,0,0.05); }
 
 /* Pengaturan Sertifikat A4 Landscape - Desain Minimalis Sesuai Gambar */
@@ -91,8 +89,11 @@ table.t{width:100%;border-collapse:collapse;margin:8px 0;font-size:15px}table.t 
 .cert-logos { display: flex; gap: 30px; justify-content: center; margin-bottom: 25px; }
 .cert-logos img { height: 110px; object-fit: contain; } /* Ukuran logo disesuaikan */
 
-.cert-score-grid { display: flex; justify-content: center; gap: 30px; margin: 30px 0; width: 100%; }
-.cert-score-box-inner { background: #EAF0FF; border-radius: 12px; padding: 18px 20px; min-width: 170px; }
+/* Style untuk Garis Belakang Kotak Skor di Sertifikat */
+.cert-score-container { position: relative; margin: 30px 0; width: 100%; display: flex; justify-content: center; align-items: center; }
+.cert-score-line { position: absolute; top: 50%; left: 0; right: 0; height: 14px; background: #14213D; transform: translateY(-50%); z-index: 1; }
+.cert-score-grid { display: flex; justify-content: center; gap: 30px; position: relative; z-index: 2; }
+.cert-score-box-inner { background: #EAF0FF; border-radius: 12px; padding: 18px 20px; min-width: 170px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
 .cert-score-box-inner span { display: block; font-size: 16px; color: #55627F; margin-bottom: 8px; }
 .cert-score-box-inner b { display: block; font-size: 42px; color: #14213D; }
 
@@ -130,7 +131,7 @@ let state = {
     answers: [],
     adminData: [],
     questions: [],
-    waktuUjian: 10, // Default Waktu Ujian: 10 Menit sesuai permintaan
+    waktuUjian: 10, 
     timeRemaining: 0,
     timerInterval: null,
     tabViolations: 0,
@@ -211,20 +212,29 @@ function viewQuiz() {
             else if (idx === state.selectedOption) extraClass = 'no';
         }
         
-        optionsHtml += `<button class="o ${isSelected} ${extraClass}" onclick="selectOption(${idx})" ${state.answerSubmitted ? 'disabled' : ''}>${opt}</button>`;
+        const label = String.fromCharCode(65 + idx);
+        optionsHtml += `<button class="o ${isSelected} ${extraClass}" onclick="selectOption(${idx})" ${state.answerSubmitted ? 'disabled' : ''}><b>${label}.</b> ${opt}</button>`;
     });
 
     let feedbackHtml = '';
     if (state.answerSubmitted) {
         const isCorrect = (state.selectedOption === q.ans);
-        const feedbackText = isCorrect ? '<b>BENAR!</b> Hebat! Kamu berhasil menjawab dengan tepat.' : '<b>Belum tepat.</b> Coba perhatikan kembali informasi dalam soal. Salah itu bagian dari belajar.';
+        const correctLetter = String.fromCharCode(65 + q.ans);
+        
+        // Teks feedback yang diperjelas beserta pembahasannya
+        const feedbackText = isCorrect 
+            ? `<span style="color:#1B5E20; font-size:18px;"><b>🎉 JAWABAN ANDA BENAR!</b></span>` 
+            : `<span style="color:#B71C1C; font-size:18px;"><b>❌ JAWABAN ANDA KURANG TEPAT.</b></span>`;
+        
         const feedbackClass = isCorrect ? 'ok' : 'no';
         feedbackHtml = `
             <div class="feedback-box ${feedbackClass}">
                 ${feedbackText}<br><br>
-                <b>Pembahasan:</b> ${q.pembahasan || 'Tidak ada pembahasan.'}
+                <b>Jawaban yang Tepat: ${correctLetter}. ${q.options[q.ans]}</b><br><br>
+                <b>Pembahasan / Langkah Penyelesaian:</b><br>
+                ${q.pembahasan || 'Tidak ada pembahasan khusus untuk soal ini.'}
             </div>
-            <button class="b" onclick="nextQuestion()">LANJUT</button>
+            <button class="b" onclick="nextQuestion()">LANJUT KE SOAL BERIKUTNYA</button>
         `;
     }
 
@@ -243,7 +253,7 @@ function viewQuiz() {
                 <div class="bar" style="margin: 10px 0;"><i style="width: ${((state.currentQuestion) / state.questions.length) * 100}%"></i></div>
                 <div class="q">${q.q}</div>
                 ${optionsHtml}
-                ${!state.answerSubmitted ? `<button class="b" style="margin-top:20px" onclick="submitAnswer()" ${state.selectedOption === null ? 'disabled' : ''}>Jawab</button>` : feedbackHtml}
+                ${!state.answerSubmitted ? `<button class="b y" style="margin-top:20px" onclick="submitAnswer()" ${state.selectedOption === null ? 'disabled' : ''}>Kunci Jawaban</button>` : feedbackHtml}
             </div>
         </div>
     `;
@@ -306,17 +316,20 @@ function viewResult() {
                                 
                                 <p style="font-size: 18px; margin: 0; color: #333;">telah menyelesaikan Misi Pemuda Cerdas, game literasi numerasi<br>SMK 02 Islam 45 Ambulu, dengan hasil:</p>
                                 
-                                <div class="cert-score-grid">
-                                    <div class="cert-score-box-inner"><span>Literasi</span><b>${Math.round(state.scores.Literasi || 0)}</b></div>
-                                    <div class="cert-score-box-inner"><span>Numerasi</span><b>${Math.round(state.scores.Numerasi || 0)}</b></div>
-                                    <div class="cert-score-box-inner"><span>Penalaran</span><b>${Math.round(state.scores.Penalaran || 0)}</b></div>
-                                    <div class="cert-score-box-inner"><span>Skor Akhir</span><b>${Math.round(state.score)}</b></div>
+                                <!-- Container dengan Garis Belakang Sesuai Gambar -->
+                                <div class="cert-score-container">
+                                    <div class="cert-score-line"></div>
+                                    <div class="cert-score-grid">
+                                        <div class="cert-score-box-inner"><span>Literasi</span><b>${Math.round(state.scores.Literasi || 0)}</b></div>
+                                        <div class="cert-score-box-inner"><span>Numerasi</span><b>${Math.round(state.scores.Numerasi || 0)}</b></div>
+                                        <div class="cert-score-box-inner"><span>Penalaran</span><b>${Math.round(state.scores.Penalaran || 0)}</b></div>
+                                        <div class="cert-score-box-inner"><span>Skor Akhir</span><b>${Math.round(state.score)}</b></div>
+                                    </div>
                                 </div>
                                 
                                 <h3 style="font-size: 26px; font-weight: 700; color: #14213D; margin: 0 0 10px 0;">MASTER PEMUDA CERDAS</h3>
                                 <p style="font-size: 16px; color: #55627F; margin: 0;">Terus latih literasi dan numerasimu karena digunakan setiap hari.</p>
                                 
-                                <!-- Bagian tanda tangan dihilangkan sesuai permintaan -->
                                 <p style="font-size: 14px; color: #777; margin: 40px 0 0 0;">Diterbitkan oleh Kesiswaan SMK 02 Islam 45 Ambulu<br>${today} | No. ${certNo}</p>
                             </div>
                         </div>
@@ -424,16 +437,15 @@ function renderAdminSoal() {
             <div style="background:var(--soft); padding:16px; border-radius:12px; margin-bottom:16px;">
                 <h3 style="margin-top:0; margin-bottom:8px;">Pengaturan Ujian</h3>
                 <label>Batas Waktu Pengerjaan (Menit)</label>
-                <!-- Nilai default 10 menit sudah disiapkan di sini -->
                 <input type="number" id="waktuUjianInput" value="${state.waktuUjian}" style="margin-bottom:8px; width:100px; font-weight:bold;">
                 <p style="font-size:13px; color:var(--mut); margin-top:0; margin-bottom:16px;">
                     Ubah angka di atas untuk mengatur ulang durasi ujian siswa (misal: 10 untuk 10 menit).
                 </p>
 
                 <h3 style="margin-top:0; margin-bottom:8px;">Upload Soal via Excel</h3>
-                <p style="font-size:14px; margin-top:0;">Buat file Excel dengan 8 kolom berurutan:<br>
-                <b>Pertanyaan | Opsi A | Opsi B | Opsi C | Opsi D | Jawaban | Kategori | Pembahasan</b><br>
-                <i>(Kategori isi dengan: Literasi, Numerasi, atau Penalaran)</i></p>
+                <p style="font-size:14px; margin-top:0;"><b>PENTING!</b> Susun 8 Kolom Excel Anda secara berurutan seperti ini (mulai dari A sampai H):<br>
+                <b>Pertanyaan | Opsi A | Opsi B | Opsi C | Opsi D | Kunci Jawaban | Kategori | Pembahasan</b><br>
+                <i>(Kategori wajib diisi dengan: Literasi, Numerasi, atau Penalaran)</i></p>
                 
                 <input type="file" id="fileUpload" accept=".xlsx, .xls, .csv" style="margin-top:8px; padding:10px; background:#fff; width:100%; border-radius:8px;" onchange="handleFileUpload(event)">
             </div>
@@ -529,16 +541,30 @@ function submitAnswer() {
     const q = state.questions[state.currentQuestion];
     const isCorrect = (state.selectedOption === q.ans);
     
-    const totalSoalKategori = state.questions.filter(x => x.kategori === q.kategori).length || 1;
+    // Normalisasi Nama Kategori untuk Mencegah Bug Skor 0
+    let strKat = q.kategori ? String(q.kategori).trim().toLowerCase() : 'umum';
+    let safeKat = 'Umum';
+    if (strKat.includes('lit')) safeKat = 'Literasi';
+    else if (strKat.includes('num')) safeKat = 'Numerasi';
+    else if (strKat.includes('nalar') || strKat.includes('penala')) safeKat = 'Penalaran';
+
+    // Hitung total soal untuk kategori ini secara akurat
+    const totalSoalKategori = state.questions.filter(x => {
+        let xKat = x.kategori ? String(x.kategori).trim().toLowerCase() : 'umum';
+        let xSafeKat = 'Umum';
+        if (xKat.includes('lit')) xSafeKat = 'Literasi';
+        else if (xKat.includes('num')) xSafeKat = 'Numerasi';
+        else if (xKat.includes('nalar') || xKat.includes('penala')) xSafeKat = 'Penalaran';
+        return xSafeKat === safeKat;
+    }).length || 1;
+
     const poinKategori = 100 / totalSoalKategori; 
     const poinTotal = 100 / state.questions.length;
     
     if(isCorrect) {
         state.score += poinTotal;
-        if(q.kategori && state.scores[q.kategori] !== undefined) {
-            state.scores[q.kategori] += poinKategori;
-        } else if (q.kategori) {
-            state.scores[q.kategori] = poinKategori;
+        if(safeKat !== 'Umum') {
+            state.scores[safeKat] = (state.scores[safeKat] || 0) + poinKategori;
         }
     }
     
@@ -593,51 +619,62 @@ function handleFileUpload(event) {
             const data = new Uint8Array(e.target.result);
             const workbook = XLSX.read(data, {type: 'array'});
             const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-            const json = XLSX.utils.sheet_to_json(firstSheet, {defval: ""});
+            
+            // PERUBAHAN PENTING: Baca sebagai array/baris, bukan Object Keys agar tahan banting dari salah ketik nama Header
+            const rows = XLSX.utils.sheet_to_json(firstSheet, {header: 1, defval: ""});
 
             let newQuestions = [];
-            json.forEach(row => {
-                const keys = Object.keys(row);
-                if(keys.length >= 6) {
-                    const q = row[keys[0]];
-                    const a = row[keys[1]];
-                    const b = row[keys[2]];
-                    const c = row[keys[3]];
-                    const d = row[keys[4]];
-                    const ansStr = String(row[keys[5]]).toUpperCase().trim();
-                    const kategori = keys.length >= 7 ? row[keys[6]] : "Umum";
-                    const pembahasan = keys.length >= 8 ? row[keys[7]] : "";
+            // Mulai dari i=1 untuk melewati baris ke-1 (Header/Judul Kolom)
+            for (let i = 1; i < rows.length; i++) {
+                const row = rows[i];
+                // Cek minimal ada 6 kolom (sampai Kunci Jawaban) dan kolom pertama (pertanyaan) tidak kosong
+                if(row.length >= 6 && row[0] !== "") {
+                    const q = String(row[0]).trim();
+                    const a = String(row[1]).trim();
+                    const b = String(row[2]).trim();
+                    const c = String(row[3]).trim();
+                    const d = String(row[4]).trim();
+                    const ansStr = String(row[5]).toUpperCase().trim();
+                    
+                    // Kolom 7 (index 6) adalah Kategori, Kolom 8 (index 7) adalah Pembahasan
+                    const kategori = row.length >= 7 ? String(row[6]).trim() : "Umum";
+                    const pembahasan = row.length >= 8 ? String(row[7]).trim() : "";
+
+                    // Filterisasi kategori yang ketat dan aman
+                    let safeKat = 'Umum';
+                    let rawKatLower = kategori.toLowerCase();
+                    if(rawKatLower.includes('lit')) safeKat = 'Literasi';
+                    else if(rawKatLower.includes('num')) safeKat = 'Numerasi';
+                    else if(rawKatLower.includes('nalar') || rawKatLower.includes('penala')) safeKat = 'Penalaran';
 
                     let ansIdx = 0; 
                     if(ansStr === 'B') ansIdx = 1;
                     else if(ansStr === 'C') ansIdx = 2;
                     else if(ansStr === 'D') ansIdx = 3;
 
-                    if(q && a) { 
-                        newQuestions.push({
-                            q: String(q),
-                            options: [String(a), String(b), String(c), String(d)],
-                            ans: ansIdx,
-                            kategori: String(kategori),
-                            pembahasan: String(pembahasan)
-                        });
-                    }
+                    newQuestions.push({
+                        q: q,
+                        options: [a, b, c, d],
+                        ans: ansIdx,
+                        kategori: safeKat, // Kategori tersimpan dengan format standar
+                        pembahasan: pembahasan
+                    });
                 }
-            });
+            }
 
             document.body.removeChild(document.body.lastChild);
 
             if(newQuestions.length > 0) {
                 state.questions = newQuestions;
                 render();
-                showModal('Berhasil memuat ' + newQuestions.length + ' soal. Cek preview di bawah, lalu klik "Simpan Pengaturan & Soal ke Server"!');
+                showModal('Berhasil memuat ' + newQuestions.length + ' soal. Pastikan di Preview Kategori tidak tertulis "Umum" jika itu soal Literasi/Numerasi. Lalu klik "Simpan Pengaturan & Soal"!');
             } else {
-                showModal('Gagal membaca data. Pastikan ada minimal 6 kolom yang terisi sesuai format.');
+                showModal('Gagal membaca data. Pastikan format tabel di Excel sudah berurutan dari Kolom A sampai H.');
             }
         } catch (err) {
             console.error(err);
             document.body.removeChild(document.body.lastChild);
-            showModal('Terjadi kesalahan. Pastikan file berupa format Excel yang valid (.xlsx / .csv).');
+            showModal('Terjadi kesalahan saat membaca file. Pastikan itu file Excel (.xlsx / .csv) yang valid.');
         }
     };
     reader.readAsArrayBuffer(file);
@@ -656,7 +693,6 @@ function loadQuestions(autoStartQuiz = false) {
                 state.questions = data;
             } else if (data && data.questions && data.questions.length > 0) {
                 state.questions = data.questions;
-                // Tetapkan 10 sebagai default/fallback jika tidak terbaca dari server
                 state.waktuUjian = data.waktu || 10; 
             } else {
                 state.questions = JSON.parse(JSON.stringify(defaultQuestions));
@@ -672,7 +708,6 @@ function loadQuestions(autoStartQuiz = false) {
 
 function saveQuestionsToSheet() {
     const waktuInput = document.getElementById('waktuUjianInput');
-    // Ambil angka dari inputan panitia, jika kosong pakai 10 menit
     if (waktuInput) state.waktuUjian = parseInt(waktuInput.value) || 10;
     
     const payload = JSON.stringify({
